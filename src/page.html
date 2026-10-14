@@ -1,0 +1,419 @@
+<title>Hamdan Rijali Triyadi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: an engineer's logbook. Sticky index on the left (desktop); career
+   as a dated log; side projects as field reports with measured readouts. */
+:root {
+  --paper: #f2f3ef;
+  --sheet: #fbfbf8;
+  --ink: #17202a;
+  --muted: #5b6470;
+  --rule: #d6d9d2;
+  --cobalt: #2448c7;
+  --leaf: #2f7d4f;
+  --chip: #e6e9e2;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #12161b; --sheet: #181d23; --ink: #e8ebe6; --muted: #9aa3ad; --rule: #2a313a;
+    --cobalt: #8aa4ff; --leaf: #6cc493; --chip: #222932; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #12161b; --sheet: #181d23; --ink: #e8ebe6; --muted: #9aa3ad; --rule: #2a313a;
+  --cobalt: #8aa4ff; --leaf: #6cc493; --chip: #222932; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font: 400 16px/1.6 var(--body); margin: 0; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 72px; }
+a { color: var(--cobalt); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--cobalt); outline-offset: 3px; border-radius: 2px; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.1; text-wrap: balance; margin: 0; }
+p { margin: 0; max-width: 68ch; }
+ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 72ch; }
+.label { font: 500 12px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+
+/* Hero */
+.hero { display: grid; gap: 22px; padding-block: 24px 40px; border-bottom: 1px solid var(--rule); }
+.hero h1 { font-size: clamp(42px, 7.5vw, 80px); font-weight: 800; letter-spacing: -.02em; }
+.hero .role { font: 600 clamp(19px, 2.4vw, 24px)/1.3 var(--display); color: var(--cobalt); }
+.hero .lede { font-size: clamp(17px, 2vw, 19px); max-width: 64ch; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 22px; font: 400 14px/1.5 var(--mono); color: var(--muted); }
+.facts b { color: var(--ink); font-weight: 500; }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 6px; border: 1px solid var(--rule); background: var(--sheet); color: var(--ink); text-decoration: none; font: 500 14px/1 var(--body); }
+.btn.primary { background: var(--cobalt); border-color: var(--cobalt); color: var(--sheet); }
+.btn:hover { border-color: var(--cobalt); }
+
+/* Body grid */
+.grid { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 48px; padding-top: 40px; }
+nav.index { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; display: grid; gap: 10px; }
+nav.index a { color: var(--muted); text-decoration: none; font: 500 14px/1.4 var(--body); }
+nav.index a:hover { color: var(--ink); }
+nav.index .group { margin-top: 10px; }
+main { display: grid; gap: 64px; min-width: 0; }
+section > header { display: grid; gap: 8px; margin-bottom: 22px; }
+section > header h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 700; letter-spacing: -.01em; }
+
+/* Career log */
+.log { display: grid; gap: 0; border-top: 1px solid var(--rule); }
+.entry { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 24px; padding-block: 22px; border-bottom: 1px solid var(--rule); }
+.entry .when { font: 400 14px/1.5 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.entry .what { display: grid; gap: 8px; min-width: 0; }
+.entry h3 { font-size: 21px; font-weight: 700; }
+.entry .org { color: var(--muted); font-size: 15px; }
+
+.awards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px 28px; margin-top: 26px; }
+.awards div { display: grid; gap: 4px; align-content: start; }
+.awards b { font: 700 17px/1.3 var(--display); }
+.awards .date { font: 400 13px/1.4 var(--mono); color: var(--muted); }
+
+/* Project reports */
+.case { display: grid; gap: 16px; padding-block: 28px; border-top: 1px solid var(--rule); }
+.case h3.title { font-size: clamp(24px, 3vw, 32px); font-weight: 700; }
+.case .tagline { font-size: 17px; color: var(--muted); }
+.case h4 { font: 600 13px/1.4 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 6px 0 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { background: var(--chip); color: var(--ink); font: 400 13px/1 var(--mono); padding: 6px 9px; border-radius: 4px; }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; }
+.two > div { display: grid; gap: 10px; align-content: start; min-width: 0; }
+
+/* Measured readouts: the one place with instrument styling */
+.readouts { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+.readout { background: var(--sheet); padding: 16px 18px; display: grid; gap: 6px; }
+.readout .k { font: 500 12px/1.4 var(--mono); color: var(--muted); letter-spacing: .04em; }
+.readout .v { font: 500 22px/1.2 var(--mono); font-variant-numeric: tabular-nums; }
+.readout .v s { color: var(--muted); text-decoration-thickness: 1px; font-size: 16px; }
+.readout .v .arrow { color: var(--muted); font-size: 16px; padding-inline: 4px; }
+.readout .v em { font-style: normal; color: var(--leaf); }
+.readout .how { font-size: 13px; color: var(--muted); }
+
+/* Flow diagram in plain HTML */
+.flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font: 400 13px/1.3 var(--mono); }
+.flow span.node { background: var(--sheet); border: 1px solid var(--rule); border-radius: 4px; padding: 7px 9px; }
+.flow span.to { color: var(--muted); }
+.note { font-size: 14px; color: var(--muted); }
+
+/* Skills */
+.skills { display: grid; gap: 0; border-top: 1px solid var(--rule); }
+.skills div { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 24px; padding-block: 14px; border-bottom: 1px solid var(--rule); }
+.skills dt { font: 600 14px/1.5 var(--body); }
+.skills dd { margin: 0; min-width: 0; }
+
+.practice { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 22px 28px; }
+.practice div { display: grid; gap: 6px; align-content: start; }
+.practice b { font: 700 18px/1.25 var(--display); }
+.contact { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 22px; display: grid; gap: 12px; }
+.copy { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.copy code { font: 500 15px/1.4 var(--mono); user-select: all; }
+.copy button { font: 500 13px/1 var(--body); padding: 8px 10px; border-radius: 6px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); cursor: pointer; }
+footer { margin-top: 56px; font-size: 13px; color: var(--muted); }
+
+@media (max-width: 860px) {
+  .grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  nav.index { position: static; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+  nav.index .group { margin-top: 0; }
+  .two { grid-template-columns: minmax(0, 1fr); }
+  .entry, .skills div { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+}
+</style>
+
+<div class="wrap">
+  <section class="hero" aria-labelledby="who">
+    <p class="label">Bandung, Indonesia</p>
+    <h1 id="who">Hamdan Rijali Triyadi</h1>
+    <p class="role">Senior Backend Software Engineer</p>
+    <p class="lede">Over ten years building backend systems for banks, insurance, rail ticketing and restaurant ordering, in Java, Spring Boot, Node.js and NestJS. Lately also full-stack AI products of my own: a 3D office of AI agents you can phone, a personal-finance app, and the self-hosted infrastructure that runs them.</p>
+    <div class="facts">
+      <span><b>10+</b> years in backend</span>
+      <span><b>5</b> awards at TabSquare</span>
+      <span><b>~520</b> commits on side projects since May 2026</span>
+    </div>
+    <div class="links">
+      <a class="btn primary" href="#contact">Get in touch</a>
+      <a class="btn" href="https://github.com/hasaycha">GitHub</a>
+      <a class="btn" href="#projects">See the projects</a>
+    </div>
+  </section>
+
+  <div class="grid">
+    <nav class="index" aria-label="Sections">
+      <a href="#experience">Experience</a>
+      <a href="#projects">Projects</a>
+      <a href="#skills">Skills</a>
+      <a href="#practice">How I work</a>
+      <a href="#education">Education</a>
+      <a class="group" href="#contact">Contact</a>
+    </nav>
+
+    <main>
+      <section id="experience" aria-labelledby="experience-title">
+        <header>
+          <p class="label">Career</p>
+          <h2 id="experience-title">Experience</h2>
+        </header>
+        <div class="log">
+          <div class="entry">
+            <p class="when">Jul 2021 – now</p>
+            <div class="what">
+              <h3>Backend Developer</h3>
+              <p class="org">TabSquare · restaurant ordering</p>
+              <ul>
+                <li>Backend ordering systems and middleware for POS and CRM platforms, in Java and Spring Boot.</li>
+                <li>Coordinated a production-wide security rollout: middleware 4.8 to close critical IDOR vulnerabilities, with legacy unauthenticated routes blocked at Cloudflare.</li>
+                <li>Tuned MySQL for high-availability services: resolved multi-threaded exceptions and resized buffer pools.</li>
+                <li>Designed and launched the Campaign Management and Promotion module, integrated with Ascentis and Braze.</li>
+                <li>Uses Claude Code and the Claude CLI daily for refactoring, boilerplate and debugging.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="entry">
+            <p class="when">Jul 2019 – Jul 2021</p>
+            <div class="what">
+              <h3>Senior Backend Engineer</h3>
+              <p class="org">PT Lifepal Technologies Indonesia · insurance</p>
+              <ul>
+                <li>Quotation and order microservices in Node.js and NestJS for online insurance purchases.</li>
+                <li>Payment gateways Midtrans, Xendit and DOKU, with real-time requests and asynchronous webhooks.</li>
+                <li>Agent balance services, and a WhatsApp conversation workflow in Deno connected to Zendesk support.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="entry">
+            <p class="when">Jan 2019 – Jul 2019</p>
+            <div class="what">
+              <h3>Senior Backend Engineer</h3>
+              <p class="org">ATI Business Group · rail ticketing</p>
+              <ul>
+                <li>Backend for the ACP Rail ticket purchasing platform with Java, Spring Boot and Angular on JHipster.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="entry">
+            <p class="when">Oct 2012 – Jan 2019</p>
+            <div class="what">
+              <h3>IT Consultant &amp; Java Software Developer</h3>
+              <p class="org">PT Infosys Solusi Terpadu · banking</p>
+              <ul>
+                <li>BRI and Bank Muamalat: mobile banking backend services on proprietary Java frameworks.</li>
+                <li>Bank Syariah Mandiri: IBM Datacap (ICR/OCR) to digitise KYC documents during customer onboarding.</li>
+                <li>Bank Sinarmas: Java transaction systems for teller and customer-service operations.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="awards" aria-label="Awards at TabSquare">
+          <div><span class="date">Dec 2023 &amp; Feb 2024</span><b>Extra Mile Award, twice</b><p class="note">Technical leadership in architecture discussions, the Braze integration proof of concept, and mentoring.</p></div>
+          <div><span class="date">Mar 2023</span><b>Team Excellence Award</b><p class="note">End-to-end launch of the Campaign Management and Promotion modules with Ascentis.</p></div>
+          <div><span class="date">Mar 2022</span><b>Extra Mile Award</b><p class="note">Critical Redcat integration releases and Kiosk API performance work.</p></div>
+          <div><span class="date">Dec 2021</span><b>Stunning Debut Award</b><p class="note">Fast onboarding and the core Kiosk API optimisation project.</p></div>
+        </div>
+      </section>
+
+      <section id="projects" aria-labelledby="projects-title">
+        <header>
+          <p class="label">Independent work · 2026</p>
+          <h2 id="projects-title">Projects</h2>
+          <p>Built and run on my own hardware. The code lives in private repositories; I am happy to walk through it.</p>
+        </header>
+
+        <article class="case" id="office">
+          <p class="label">Aug–Oct 2026 · 102 commits</p>
+          <h3 class="title">Hasaycha AI Office</h3>
+          <p class="tagline">A 3D office where sixteen AI staff work, meet, and take phone calls.</p>
+          <p>Built on the open-source Hermes3D frontend (MIT). I added the staff, the integrations and the voice layer: each agent has its own persona, model and memory; the Manager delegates and runs planning meetings that end in consensus; and when a decision needs the owner, the office calls, in the browser, as a WhatsApp voice note, or in a Discord voice channel.</p>
+          <div class="readouts" role="list">
+            <div class="readout" role="listitem"><span class="k">SPEECH-TO-TEXT, 13 S CLIP</span><span class="v"><s>6.3 s</s><span class="arrow">→</span><em>1.6 s</em></span><span class="how">whisper.cpp on the desktop GPU (Vulkan) instead of the CPU</span></div>
+            <div class="readout" role="listitem"><span class="k">END OF SPEECH → MESSAGE SENT</span><span class="v"><s>~6.5 s</s><span class="arrow">→</span><em>3.2 s</em></span><span class="how">after: measured live; before: from the CPU timings</span></div>
+            <div class="readout" role="listitem"><span class="k">AGENT COLLISIONS PER AGENT</span><span class="v"><s>6–11 / 3 min</s><span class="arrow">→</span><em>~1 / 5 min</em></span><span class="how">A* start cells that connect; walkers pause, then pass</span></div>
+          </div>
+          <div class="two">
+            <div>
+              <h4>What I built</h4>
+              <ul>
+                <li>Phone calls with natural turn-taking: talk over the agent to interrupt, say “lanjut” to resume the cut sentence, pauses mid-thought join one message, and replies are spoken while still being written.</li>
+                <li>Planning meetings where agents argue and a facilitator decides; questions for the owner go out by WhatsApp voice note and a Discord call that reads the answer back.</li>
+                <li>An MCP server giving staff read access to the finance app, its admin, containers and CI.</li>
+                <li>A watchdog and morning briefing that spend no AI tokens on a healthy day.</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Stack</h4>
+              <div class="chips"><span class="chip">Next.js</span><span class="chip">React Three Fiber</span><span class="chip">Phaser</span><span class="chip">Node.js</span><span class="chip">MCP</span><span class="chip">Python FastAPI</span><span class="chip">whisper.cpp</span><span class="chip">Vitest</span><span class="chip">Playwright</span><span class="chip">Docker</span></div>
+              <h4>How it fits together</h4>
+              <div class="flow" aria-label="Architecture">
+                <span class="node">Browser / phone</span><span class="to">→</span><span class="node">3D studio (Next.js)</span><span class="to">→</span><span class="node">Office adapter (Node)</span><span class="to">→</span><span class="node">Agent API</span>
+                <span class="node">Office adapter</span><span class="to">→</span><span class="node">MCP tools</span><span class="to">·</span><span class="node">WhatsApp / Discord</span><span class="to">·</span><span class="node">GPU voice service</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="case" id="moodmoney">
+          <p class="label">May–Oct 2026 · 165 commits</p>
+          <h3 class="title">MoodMoney</h3>
+          <p class="tagline">A personal-finance app where your money is a plant: healthy finances bloom, overspending wilts it.</p>
+          <div class="two">
+            <div>
+              <h4>Highlights</h4>
+              <ul>
+                <li>Budgets, goals, bills, debts, shared household budgets, savings challenges and AI savings plans, in English and Indonesian.</li>
+                <li>Web push (VAPID) for bill reminders and budget alerts, with delivery tracking; Google sign-in; real-time updates over Socket.IO; installable PWA.</li>
+                <li>254 passing end-to-end tests; CI backs up the database before every migration.</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Stack</h4>
+              <div class="chips"><span class="chip">NestJS 11</span><span class="chip">TypeORM</span><span class="chip">PostgreSQL</span><span class="chip">React 19</span><span class="chip">Vite PWA</span><span class="chip">Redux Toolkit</span><span class="chip">Tailwind 4</span><span class="chip">Socket.IO</span></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="case" id="backoffice">
+          <p class="label">Jun–Oct 2026 · 69 commits</p>
+          <h3 class="title">MoodMoney Backoffice</h3>
+          <p class="tagline">The admin side: users, revenue, retention and AI cost in one place.</p>
+          <div class="two">
+            <div>
+              <h4>Highlights</h4>
+              <ul>
+                <li>Live dashboard counters, retention cohorts, funnels, MRR and churn.</li>
+                <li>User management with bulk actions, impersonation and create-on-behalf for support.</li>
+                <li>Per-user AI quotas with a daily usage dashboard; feature flags by segment.</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Stack</h4>
+              <div class="chips"><span class="chip">NestJS</span><span class="chip">TypeORM</span><span class="chip">PostgreSQL</span><span class="chip">React 19</span><span class="chip">RTK Query</span><span class="chip">Playwright</span></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="case" id="hermes">
+          <p class="label">May–Oct 2026 · three repositories</p>
+          <h3 class="title">Hermes personal assistant</h3>
+          <p class="tagline">A self-hosted family assistant on WhatsApp, Telegram and Discord, with long-term memory.</p>
+          <ul>
+            <li><b>Memory bridge</b> (Python): facts with semantic recall, PIN-protected secrets, reminders, per-group privacy.</li>
+            <li><b>Gateway fork</b> (32 commits): Discord voice calls with interruptions, WhatsApp pairing that recovers on its own, an owner/guest gate, per-request model overrides.</li>
+            <li><b>Control panel</b> (NestJS + React): start, stop and inspect every service from a phone.</li>
+          </ul>
+        </article>
+
+        <article class="case" id="infra">
+          <p class="label">Ongoing</p>
+          <h3 class="title">Home lab &amp; operations</h3>
+          <p class="tagline">One desktop with a GPU, one VM, and the habits of a production team.</p>
+          <div class="readouts" role="list">
+            <div class="readout" role="listitem"><span class="k">DEPLOY</span><span class="v"><em>~10 min</em></span><span class="how">push → CI → image → private-network deploy, same in all six repos</span></div>
+            <div class="readout" role="listitem"><span class="k">RESTORE DRILL</span><span class="v"><em>monthly</em></span><span class="how">backups restored into scratch databases, row counts compared</span></div>
+            <div class="readout" role="listitem"><span class="k">VOICE SERVICE MEMORY</span><span class="v"><s>~1.5 GB</s><span class="arrow">→</span><em>105 MB</em></span><span class="how">the CPU model loads only as a GPU fallback</span></div>
+          </div>
+          <ul>
+            <li>GPU inference (local LLMs, speech-to-text, speech) on the desktop; every service in Docker Compose on a VM.</li>
+            <li>GitHub Actions to a container registry, health checks, and a guard that skips a deploy once main has moved on.</li>
+            <li>Encrypted off-site backups, an external heartbeat, and a secret scan on every commit.</li>
+          </ul>
+        </article>
+      </section>
+
+      <section id="skills" aria-labelledby="skills-title">
+        <header>
+          <p class="label">Toolbox</p>
+          <h2 id="skills-title">Skills</h2>
+        </header>
+        <dl class="skills">
+          <div><dt>Languages</dt><dd>Java, TypeScript, JavaScript, Python, SQL</dd></div>
+          <div><dt>Backend</dt><dd>Spring Boot, Hibernate, JHipster, NestJS, Node.js, FastAPI, microservices, REST and WebSocket APIs</dd></div>
+          <div><dt>Frontend</dt><dd>React, Vite, Tailwind CSS, Redux Toolkit, Next.js, React Three Fiber</dd></div>
+          <div><dt>Data</dt><dd>MySQL (composite indexes, buffer pools), PostgreSQL, TypeORM, SQLite, vector search (Qdrant, embeddings)</dd></div>
+          <div><dt>AI</dt><dd>Claude Code and Claude CLI, local LLM inference (Ollama), MCP servers, speech-to-text and text-to-speech pipelines, agent orchestration</dd></div>
+          <div><dt>Cloud &amp; DevOps</dt><dd>Docker, GitHub Actions, AWS S3, GCP, Cloudflare, Tailscale, Sentry, New Relic, Datadog</dd></div>
+          <div><dt>Integrations</dt><dd>Midtrans, Xendit, DOKU, Zendesk, Braze, Ascentis, Redcat, IBM Datacap, WhatsApp, Telegram, Discord</dd></div>
+        </dl>
+      </section>
+
+      <section id="practice" aria-labelledby="practice-title">
+        <header>
+          <p class="label">How I work</p>
+          <h2 id="practice-title">Measured, tested, written down</h2>
+        </header>
+        <div class="practice">
+          <div><b>Measure first</b><p>A fix starts with a probe that reproduces the problem and ends with the same probe showing the change.</p></div>
+          <div><b>Tests that fail first</b><p>A bug gets a test that fails before the fix; CI runs typecheck, unit and end-to-end tests on every push.</p></div>
+          <div><b>Security by default</b><p>Least-privilege database roles, secret scans before every commit, and restore drills for backups.</p></div>
+          <div><b>AI where it pays</b><p>Plain checks run first; models are called only when judgement is needed.</p></div>
+        </div>
+      </section>
+
+      <section id="education" aria-labelledby="education-title">
+        <header>
+          <p class="label">Background</p>
+          <h2 id="education-title">Education &amp; certifications</h2>
+        </header>
+        <div class="log">
+          <div class="entry">
+            <p class="when">2008 – 2012</p>
+            <div class="what">
+              <h3>Bachelor of Information Systems</h3>
+              <p class="org">Indonesian Computer University (UNIKOM), Bandung</p>
+              <p class="note">Final project: design analysis with the branch-and-bound algorithm.</p>
+            </div>
+          </div>
+          <div class="entry">
+            <p class="when">2013 – 2015</p>
+            <div class="what">
+              <h3>Certifications &amp; training</h3>
+              <ul>
+                <li>IBM Datacap Taskmaster Capture Product Fundamentals (Iverson Technology, 2013)</li>
+                <li>DB Security Workshop (Oracle Indonesia, 2013)</li>
+                <li>Basic Way4 Training (OpenWay Indonesia, 2015)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" aria-labelledby="contact-title">
+        <div class="contact">
+          <p class="label">Contact</p>
+          <h2 id="contact-title">Let's talk</h2>
+          <p>Open to senior backend and AI engineering roles. Email is the quickest way to reach me.</p>
+          <div class="copy">
+            <code id="email">hamdanrijali@gmail.com</code>
+            <button type="button" id="copy-email">Copy email</button>
+            <span class="note" id="copy-status" role="status"></span>
+          </div>
+          <p class="note"><a href="https://github.com/hasaycha">github.com/hasaycha</a></p>
+        </div>
+        <footer>© 2026 Hamdan Rijali Triyadi</footer>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+document.getElementById("copy-email").addEventListener("click", function () {
+  var status = document.getElementById("copy-status");
+  var text = document.getElementById("email").textContent;
+  var selectIt = function () {
+    var range = document.createRange();
+    range.selectNodeContents(document.getElementById("email"));
+    var selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    status.textContent = "Selected; press Ctrl+C to copy.";
+  };
+  try {
+    navigator.clipboard.writeText(text).then(function () { status.textContent = "Copied."; }, selectIt);
+  } catch (err) {
+    selectIt();
+  }
+});
+</script>
