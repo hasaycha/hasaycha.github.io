@@ -11,8 +11,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: an engineer's logbook. Sticky index on the left (desktop); career
-   as a dated log; side projects as field reports with measured readouts. */
+/* Layout: an engineer's logbook. Hero with a live "office floor" (agents
+   walking between desks), career as a drawn timeline, side projects as field
+   reports whose before/after readouts animate in. Key phrases get a
+   highlighter stroke as they scroll into view. */
 :root {
   --paper: #f2f3ef;
   --sheet: #fbfbf8;
@@ -21,6 +23,7 @@
   --rule: #d6d9d2;
   --cobalt: #2448c7;
   --leaf: #2f7d4f;
+  --mark: #ffe27a;
   --chip: #e6e9e2;
   --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
@@ -30,16 +33,17 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --paper: #12161b; --sheet: #181d23; --ink: #e8ebe6; --muted: #9aa3ad; --rule: #2a313a;
-    --cobalt: #8aa4ff; --leaf: #6cc493; --chip: #222932; color-scheme: dark;
+    --cobalt: #8aa4ff; --leaf: #6cc493; --mark: rgba(250, 204, 21, .32); --chip: #222932; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --paper: #12161b; --sheet: #181d23; --ink: #e8ebe6; --muted: #9aa3ad; --rule: #2a313a;
-  --cobalt: #8aa4ff; --leaf: #6cc493; --chip: #222932; color-scheme: dark;
+  --cobalt: #8aa4ff; --leaf: #6cc493; --mark: rgba(250, 204, 21, .32); --chip: #222932; color-scheme: dark;
 }
 * { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 body { background: var(--paper); color: var(--ink); font: 400 16px/1.6 var(--body); margin: 0; }
-.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 72px; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 72px; }
 a { color: var(--cobalt); text-underline-offset: 3px; }
 a:focus-visible, button:focus-visible { outline: 2px solid var(--cobalt); outline-offset: 3px; border-radius: 2px; }
 h1, h2, h3 { font-family: var(--display); line-height: 1.1; text-wrap: balance; margin: 0; }
@@ -47,43 +51,64 @@ p { margin: 0; max-width: 68ch; }
 ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 72ch; }
 .label { font: 500 12px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 
+/* Highlighter stroke on key phrases */
+mark { color: inherit; background: linear-gradient(var(--mark), var(--mark)) 0 88% / 100% 42% no-repeat; padding-inline: 2px; }
+
+/* Top bar with the language switch */
+.topbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 12px; }
+.brand { font: 700 15px/1 var(--display); letter-spacing: .01em; }
+.lang { display: inline-flex; border: 1px solid var(--rule); border-radius: 999px; padding: 3px; background: var(--sheet); }
+.lang button { border: 0; background: transparent; color: var(--muted); font: 500 13px/1 var(--mono); padding: 7px 11px; border-radius: 999px; cursor: pointer; }
+.lang button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+
 /* Hero */
-.hero { display: grid; gap: 22px; padding-block: 24px 40px; border-bottom: 1px solid var(--rule); }
-.hero h1 { font-size: clamp(42px, 7.5vw, 80px); font-weight: 800; letter-spacing: -.02em; }
+.hero { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 36px; align-items: center; padding-block: 28px 44px; border-bottom: 1px solid var(--rule); }
+.hero .text { display: grid; gap: 20px; min-width: 0; }
+.hero h1 { font-size: clamp(42px, 7vw, 78px); font-weight: 800; letter-spacing: -.02em; }
 .hero .role { font: 600 clamp(19px, 2.4vw, 24px)/1.3 var(--display); color: var(--cobalt); }
-.hero .lede { font-size: clamp(17px, 2vw, 19px); max-width: 64ch; }
-.facts { display: flex; flex-wrap: wrap; gap: 8px 22px; font: 400 14px/1.5 var(--mono); color: var(--muted); }
-.facts b { color: var(--ink); font-weight: 500; }
+.hero .lede { font-size: clamp(17px, 2vw, 19px); max-width: 60ch; }
+.floor { position: relative; aspect-ratio: 5 / 4; max-width: 100%; border: 1px solid var(--rule); border-radius: 10px; background: var(--sheet); overflow: hidden; }
+.floor canvas { width: 100%; height: 100%; display: block; }
+.floor figcaption { position: absolute; left: 12px; bottom: 10px; font: 400 12px/1.3 var(--mono); color: var(--muted); }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.stat { display: grid; gap: 2px; }
+.stat .n { font: 800 clamp(28px, 4vw, 40px)/1 var(--display); font-variant-numeric: tabular-nums; }
+.stat .t { font-size: 13px; color: var(--muted); line-height: 1.35; }
 .links { display: flex; flex-wrap: wrap; gap: 10px; }
-.btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 6px; border: 1px solid var(--rule); background: var(--sheet); color: var(--ink); text-decoration: none; font: 500 14px/1 var(--body); }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 6px; border: 1px solid var(--rule); background: var(--sheet); color: var(--ink); text-decoration: none; font: 500 14px/1 var(--body); transition: transform .15s, border-color .15s; }
 .btn.primary { background: var(--cobalt); border-color: var(--cobalt); color: var(--sheet); }
-.btn:hover { border-color: var(--cobalt); }
+.btn:hover { border-color: var(--cobalt); transform: translateY(-1px); }
 
 /* Body grid */
-.grid { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 48px; padding-top: 40px; }
+.grid { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 48px; padding-top: 40px; }
 nav.index { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; display: grid; gap: 10px; }
-nav.index a { color: var(--muted); text-decoration: none; font: 500 14px/1.4 var(--body); }
-nav.index a:hover { color: var(--ink); }
-nav.index .group { margin-top: 10px; }
-main { display: grid; gap: 64px; min-width: 0; }
-section > header { display: grid; gap: 8px; margin-bottom: 22px; }
-section > header h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 700; letter-spacing: -.01em; }
+nav.index a { color: var(--muted); text-decoration: none; font: 500 14px/1.4 var(--body); border-left: 2px solid transparent; padding-left: 10px; transition: color .2s, border-color .2s; }
+nav.index a:hover, nav.index a.on { color: var(--ink); border-color: var(--cobalt); }
+main { display: grid; gap: 72px; min-width: 0; }
+section > header { display: grid; gap: 8px; margin-bottom: 24px; }
+section > header h2 { font-size: clamp(28px, 4vw, 42px); font-weight: 700; letter-spacing: -.01em; }
 
-/* Career log */
-.log { display: grid; gap: 0; border-top: 1px solid var(--rule); }
-.entry { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 24px; padding-block: 22px; border-bottom: 1px solid var(--rule); }
-.entry .when { font: 400 14px/1.5 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
-.entry .what { display: grid; gap: 8px; min-width: 0; }
-.entry h3 { font-size: 21px; font-weight: 700; }
-.entry .org { color: var(--muted); font-size: 15px; }
+/* Career timeline */
+.timeline { position: relative; display: grid; gap: 30px; padding-left: 30px; }
+.timeline::before { content: ""; position: absolute; left: 6px; top: 6px; bottom: 6px; width: 2px; background: var(--rule); transform-origin: top; }
+.job { position: relative; display: grid; gap: 8px; }
+.job::before { content: ""; position: absolute; left: -30px; top: 7px; width: 14px; height: 14px; border-radius: 50%; background: var(--paper); border: 2px solid var(--cobalt); }
+.job.now::before { background: var(--cobalt); box-shadow: 0 0 0 0 var(--cobalt); animation: ping 2.4s infinite; }
+@keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(36, 72, 199, .45); } 70%, 100% { box-shadow: 0 0 0 12px rgba(36, 72, 199, 0); } }
+.job .when { font: 400 13px/1.4 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.job h3 { font-size: 22px; font-weight: 700; }
+.job .org { color: var(--muted); font-size: 15px; }
 
-.awards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px 28px; margin-top: 26px; }
-.awards div { display: grid; gap: 4px; align-content: start; }
-.awards b { font: 700 17px/1.3 var(--display); }
-.awards .date { font: 400 13px/1.4 var(--mono); color: var(--muted); }
+.awards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-top: 34px; }
+.award { background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px; padding: 16px; display: grid; gap: 6px; align-content: start; transition: transform .2s, border-color .2s; }
+.award:hover { transform: translateY(-3px); border-color: var(--cobalt); }
+.award b { font: 700 17px/1.3 var(--display); }
+.award .date { font: 400 12px/1.4 var(--mono); color: var(--muted); }
+.award p { font-size: 14px; color: var(--muted); }
 
 /* Project reports */
-.case { display: grid; gap: 16px; padding-block: 28px; border-top: 1px solid var(--rule); }
+.intro { margin-bottom: 8px; }
+.case { display: grid; gap: 16px; padding-block: 30px; border-top: 1px solid var(--rule); }
 .case h3.title { font-size: clamp(24px, 3vw, 32px); font-weight: 700; }
 .case .tagline { font-size: 17px; color: var(--muted); }
 .case h4 { font: 600 13px/1.4 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 6px 0 0; }
@@ -92,24 +117,25 @@ section > header h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 700; lette
 .two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; }
 .two > div { display: grid; gap: 10px; align-content: start; min-width: 0; }
 
-/* Measured readouts: the one place with instrument styling */
-.readouts { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
-.readout { background: var(--sheet); padding: 16px 18px; display: grid; gap: 6px; }
+/* Measured readouts with before/after bars */
+.readouts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.readout { background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; }
 .readout .k { font: 500 12px/1.4 var(--mono); color: var(--muted); letter-spacing: .04em; }
 .readout .v { font: 500 22px/1.2 var(--mono); font-variant-numeric: tabular-nums; }
 .readout .v s { color: var(--muted); text-decoration-thickness: 1px; font-size: 16px; }
 .readout .v .arrow { color: var(--muted); font-size: 16px; padding-inline: 4px; }
 .readout .v em { font-style: normal; color: var(--leaf); }
+.bar { height: 6px; border-radius: 3px; background: var(--chip); overflow: hidden; }
+.bar i { display: block; height: 100%; width: var(--to); background: var(--leaf); border-radius: 3px; transition: width 1.4s cubic-bezier(.2, .8, .2, 1) .2s; }
 .readout .how { font-size: 13px; color: var(--muted); }
 
-/* Flow diagram in plain HTML */
 .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font: 400 13px/1.3 var(--mono); }
 .flow span.node { background: var(--sheet); border: 1px solid var(--rule); border-radius: 4px; padding: 7px 9px; }
 .flow span.to { color: var(--muted); }
 .note { font-size: 14px; color: var(--muted); }
 
 /* Skills */
-.skills { display: grid; gap: 0; border-top: 1px solid var(--rule); }
+.skills { display: grid; gap: 0; border-top: 1px solid var(--rule); margin: 0; }
 .skills div { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 24px; padding-block: 14px; border-bottom: 1px solid var(--rule); }
 .skills dt { font: 600 14px/1.5 var(--body); }
 .skills dd { margin: 0; min-width: 0; }
@@ -117,289 +143,312 @@ section > header h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 700; lette
 .practice { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 22px 28px; }
 .practice div { display: grid; gap: 6px; align-content: start; }
 .practice b { font: 700 18px/1.25 var(--display); }
-.contact { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 22px; display: grid; gap: 12px; }
+.edu { display: grid; gap: 18px; }
+.edu > div { display: grid; gap: 6px; }
+.edu h3 { font-size: 20px; }
+.contact { background: var(--ink); color: var(--paper); border-radius: 12px; padding: clamp(22px, 4vw, 40px); display: grid; gap: 14px; }
+.contact h2 { font-size: clamp(30px, 5vw, 48px); }
+.contact .label { color: inherit; opacity: .7; }
+.contact p { opacity: .85; }
+.contact .links .btn { background: transparent; color: var(--paper); border-color: rgba(127, 127, 127, .5); }
+.contact .links .btn.primary { background: var(--paper); color: var(--ink); border-color: var(--paper); }
 .copy { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-.copy code { font: 500 15px/1.4 var(--mono); user-select: all; }
-.copy button { font: 500 13px/1 var(--body); padding: 8px 10px; border-radius: 6px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); cursor: pointer; }
-footer { margin-top: 56px; font-size: 13px; color: var(--muted); }
+.copy code { font: 500 16px/1.4 var(--mono); user-select: all; }
+footer { margin-top: 40px; font-size: 13px; color: var(--muted); }
 
-@media (max-width: 860px) {
+/* Scroll reveal: only below-the-fold elements get the "pre" state from JS,
+   so the page reads complete without JS and at first paint. */
+.pre { opacity: 0; transform: translateY(18px); }
+.reveal { transition: opacity .7s ease, transform .7s ease; }
+.pre mark, mark.pre-mark { background-size: 0% 42%; }
+mark { transition: background-size 1.1s cubic-bezier(.2, .8, .2, 1) .35s; }
+.pre .bar i { width: var(--from); }
+.timeline.pre-line::before { transform: scaleY(0); }
+.timeline::before { transition: transform 1.6s ease .1s; }
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: minmax(0, 1fr); }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }
-  nav.index { position: static; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
-  nav.index .group { margin-top: 0; }
+  nav.index { position: static; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
   .two { grid-template-columns: minmax(0, 1fr); }
-  .entry, .skills div { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .skills div { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .pre { opacity: 1; transform: none; }
+  .reveal, mark, .bar i, .timeline::before, .btn, .award { transition: none; }
+  .job.now::before { animation: none; }
 }
 </style>
 </head>
 <body>
 <div class="wrap">
+  <div class="topbar">
+    <span class="brand">Hamdan R. T.</span>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-lang="id" aria-pressed="false">ID</button>
+    </div>
+  </div>
+
   <section class="hero" aria-labelledby="who">
-    <p class="label">Bandung, Indonesia</p>
-    <h1 id="who">Hamdan Rijali Triyadi</h1>
-    <p class="role">Senior Backend Software Engineer</p>
-    <p class="lede">Over ten years building backend systems for banks, insurance, rail ticketing and restaurant ordering, in Java, Spring Boot, Node.js and NestJS. Lately also full-stack AI products of my own: a 3D office of AI agents you can phone, a personal-finance app, and the self-hosted infrastructure that runs them.</p>
-    <div class="facts">
-      <span><b>10+</b> years in backend</span>
-      <span><b>5</b> awards at TabSquare</span>
-      <span><b>~520</b> commits on side projects since May 2026</span>
+    <div class="text">
+      <p class="label" data-i18n="hero.where">Bandung, Indonesia</p>
+      <h1 id="who">Hamdan Rijali Triyadi</h1>
+      <p class="role" data-i18n="hero.role">Senior Backend Software Engineer</p>
+      <p class="lede" data-i18n="hero.lede">Over <mark>ten years</mark> building backend systems for banks, insurance, rail ticketing and restaurant ordering, in Java, Spring Boot, Node.js and NestJS. Lately I also ship <mark>AI products of my own</mark>, built with Claude Code as my pair programmer and run on my own hardware.</p>
+      <div class="stats">
+        <div class="stat"><span class="n" data-count="10" data-suffix="+">10+</span><span class="t" data-i18n="stat.years">years in backend</span></div>
+        <div class="stat"><span class="n" data-count="5">5</span><span class="t" data-i18n="stat.awards">awards at TabSquare</span></div>
+        <div class="stat"><span class="n" data-count="4">4</span><span class="t" data-i18n="stat.banks">banks served as a consultant</span></div>
+        <div class="stat"><span class="n" data-count="520" data-prefix="~">~520</span><span class="t" data-i18n="stat.commits">commits on my own products in 2026</span></div>
+      </div>
+      <div class="links">
+        <a class="btn primary" href="#contact" data-i18n="cta.contact">Get in touch</a>
+        <a class="btn" href="https://www.linkedin.com/in/hamdan-rijali-202b5599">LinkedIn</a>
+        <a class="btn" href="https://github.com/hasaycha">GitHub</a>
+      </div>
     </div>
-    <div class="links">
-      <a class="btn primary" href="#contact">Get in touch</a>
-      <a class="btn" href="https://github.com/hasaycha">GitHub</a>
-      <a class="btn" href="#projects">See the projects</a>
-    </div>
+    <figure class="floor" style="margin:0">
+      <canvas id="floor" aria-label="Animated office floor: AI agents walking between desks"></canvas>
+      <figcaption data-i18n="hero.floor">Live sketch of my AI office: agents moving between desks</figcaption>
+    </figure>
   </section>
 
   <div class="grid">
     <nav class="index" aria-label="Sections">
-      <a href="#experience">Experience</a>
-      <a href="#projects">Projects</a>
-      <a href="#skills">Skills</a>
-      <a href="#practice">How I work</a>
-      <a href="#education">Education</a>
-      <a class="group" href="#contact">Contact</a>
+      <a href="#experience" data-i18n="nav.experience">Experience</a>
+      <a href="#projects" data-i18n="nav.projects">Projects</a>
+      <a href="#skills" data-i18n="nav.skills">Skills</a>
+      <a href="#practice" data-i18n="nav.practice">How I work</a>
+      <a href="#education" data-i18n="nav.education">Education</a>
+      <a href="#contact" data-i18n="nav.contact">Contact</a>
     </nav>
 
     <main>
       <section id="experience" aria-labelledby="experience-title">
-        <header>
-          <p class="label">Career</p>
-          <h2 id="experience-title">Experience</h2>
+        <header class="reveal">
+          <p class="label" data-i18n="exp.label">Career</p>
+          <h2 id="experience-title" data-i18n="exp.title">Experience</h2>
         </header>
-        <div class="log">
-          <div class="entry">
-            <p class="when">Jul 2021 – now</p>
-            <div class="what">
-              <h3>Backend Developer</h3>
-              <p class="org">TabSquare · restaurant ordering</p>
-              <ul>
-                <li>Backend ordering systems and middleware for POS and CRM platforms, in Java and Spring Boot.</li>
-                <li>Coordinated a production-wide security rollout: middleware 4.8 to close critical IDOR vulnerabilities, with legacy unauthenticated routes blocked at Cloudflare.</li>
-                <li>Tuned MySQL for high-availability services: resolved multi-threaded exceptions and resized buffer pools.</li>
-                <li>Designed and launched the Campaign Management and Promotion module, integrated with Ascentis and Braze.</li>
-                <li>Uses Claude Code and the Claude CLI daily for refactoring, boilerplate and debugging.</li>
-              </ul>
-            </div>
+        <div class="timeline">
+          <div class="job now reveal">
+            <p class="when" data-i18n="exp.tab.when">Jul 2021 – now</p>
+            <h3>Backend Developer</h3>
+            <p class="org" data-i18n="exp.tab.org">TabSquare · restaurant ordering</p>
+            <ul data-i18n="exp.tab.list">
+              <li>Backend ordering systems and middleware for POS and CRM platforms, in Java and Spring Boot.</li>
+              <li>Coordinated a <mark>production-wide security rollout</mark>: middleware 4.8 to close critical IDOR vulnerabilities, with legacy unauthenticated routes blocked at Cloudflare.</li>
+              <li>Tuned MySQL for high-availability services: resolved multi-threaded exceptions and resized buffer pools.</li>
+              <li>Designed and launched the <mark>Campaign Management and Promotion module</mark>, integrated with Ascentis and Braze.</li>
+              <li>Uses Claude Code and the Claude CLI daily for refactoring, boilerplate and debugging.</li>
+            </ul>
           </div>
-          <div class="entry">
-            <p class="when">Jul 2019 – Jul 2021</p>
-            <div class="what">
-              <h3>Senior Backend Engineer</h3>
-              <p class="org">PT Lifepal Technologies Indonesia · insurance</p>
-              <ul>
-                <li>Quotation and order microservices in Node.js and NestJS for online insurance purchases.</li>
-                <li>Payment gateways Midtrans, Xendit and DOKU, with real-time requests and asynchronous webhooks.</li>
-                <li>Agent balance services, and a WhatsApp conversation workflow in Deno connected to Zendesk support.</li>
-              </ul>
-            </div>
+          <div class="job reveal">
+            <p class="when" data-i18n="exp.life.when">Jul 2019 – Jul 2021</p>
+            <h3>Senior Backend Engineer</h3>
+            <p class="org" data-i18n="exp.life.org">PT Lifepal Technologies Indonesia · insurance</p>
+            <ul data-i18n="exp.life.list">
+              <li>Quotation and order microservices in Node.js and NestJS for online insurance purchases.</li>
+              <li>Payment gateways <mark>Midtrans, Xendit and DOKU</mark>, with real-time requests and asynchronous webhooks.</li>
+              <li>Agent balance services, and a WhatsApp conversation workflow in Deno connected to Zendesk support.</li>
+            </ul>
           </div>
-          <div class="entry">
-            <p class="when">Jan 2019 – Jul 2019</p>
-            <div class="what">
-              <h3>Senior Backend Engineer</h3>
-              <p class="org">ATI Business Group · rail ticketing</p>
-              <ul>
-                <li>Backend for the ACP Rail ticket purchasing platform with Java, Spring Boot and Angular on JHipster.</li>
-              </ul>
-            </div>
+          <div class="job reveal">
+            <p class="when" data-i18n="exp.ati.when">Jan 2019 – Jul 2019</p>
+            <h3>Senior Backend Engineer</h3>
+            <p class="org" data-i18n="exp.ati.org">ATI Business Group · rail ticketing</p>
+            <ul data-i18n="exp.ati.list">
+              <li>Backend for the ACP Rail ticket purchasing platform with Java, Spring Boot and Angular on JHipster.</li>
+            </ul>
           </div>
-          <div class="entry">
-            <p class="when">Oct 2012 – Jan 2019</p>
-            <div class="what">
-              <h3>IT Consultant &amp; Java Software Developer</h3>
-              <p class="org">PT Infosys Solusi Terpadu · banking</p>
-              <ul>
-                <li>BRI and Bank Muamalat: mobile banking backend services on proprietary Java frameworks.</li>
-                <li>Bank Syariah Mandiri: IBM Datacap (ICR/OCR) to digitise KYC documents during customer onboarding.</li>
-                <li>Bank Sinarmas: Java transaction systems for teller and customer-service operations.</li>
-              </ul>
-            </div>
+          <div class="job reveal">
+            <p class="when" data-i18n="exp.inf.when">Oct 2012 – Jan 2019</p>
+            <h3 data-i18n="exp.inf.role">IT Consultant &amp; Java Software Developer</h3>
+            <p class="org" data-i18n="exp.inf.org">PT Infosys Solusi Terpadu · banking</p>
+            <ul data-i18n="exp.inf.list">
+              <li>BRI and Bank Muamalat: mobile banking backend services on proprietary Java frameworks.</li>
+              <li>Bank Syariah Mandiri: <mark>IBM Datacap (ICR/OCR)</mark> to digitise KYC documents during customer onboarding.</li>
+              <li>Bank Sinarmas: Java transaction systems for teller and customer-service operations.</li>
+            </ul>
           </div>
         </div>
         <div class="awards" aria-label="Awards at TabSquare">
-          <div><span class="date">Dec 2023 &amp; Feb 2024</span><b>Extra Mile Award, twice</b><p class="note">Technical leadership in architecture discussions, the Braze integration proof of concept, and mentoring.</p></div>
-          <div><span class="date">Mar 2023</span><b>Team Excellence Award</b><p class="note">End-to-end launch of the Campaign Management and Promotion modules with Ascentis.</p></div>
-          <div><span class="date">Mar 2022</span><b>Extra Mile Award</b><p class="note">Critical Redcat integration releases and Kiosk API performance work.</p></div>
-          <div><span class="date">Dec 2021</span><b>Stunning Debut Award</b><p class="note">Fast onboarding and the core Kiosk API optimisation project.</p></div>
+          <div class="award reveal"><span class="date" data-i18n="aw.1.date">Dec 2023 &amp; Feb 2024</span><b data-i18n="aw.1.name">Extra Mile Award, twice</b><p data-i18n="aw.1.text">Technical leadership in architecture discussions, the Braze integration proof of concept, and mentoring.</p></div>
+          <div class="award reveal"><span class="date" data-i18n="aw.2.date">Mar 2023</span><b>Team Excellence Award</b><p data-i18n="aw.2.text">End-to-end launch of the Campaign Management and Promotion modules with Ascentis.</p></div>
+          <div class="award reveal"><span class="date" data-i18n="aw.3.date">Mar 2022</span><b>Extra Mile Award</b><p data-i18n="aw.3.text">Critical Redcat integration releases and Kiosk API performance work.</p></div>
+          <div class="award reveal"><span class="date" data-i18n="aw.4.date">Dec 2021</span><b>Stunning Debut Award</b><p data-i18n="aw.4.text">Fast onboarding and the core Kiosk API optimisation project.</p></div>
         </div>
       </section>
 
       <section id="projects" aria-labelledby="projects-title">
-        <header>
-          <p class="label">Independent work · 2026</p>
-          <h2 id="projects-title">Projects</h2>
-          <p>Built and run on my own hardware. The code lives in private repositories; I am happy to walk through it.</p>
+        <header class="reveal">
+          <p class="label" data-i18n="pr.label">Independent work · 2026</p>
+          <h2 id="projects-title" data-i18n="pr.title">Projects</h2>
+          <p class="intro" data-i18n="pr.intro">Built with Claude Code as my AI pair programmer. I own the product, the architecture, the reviews, the tests and the operations. The code lives in private repositories; I am happy to walk through it.</p>
         </header>
 
-        <article class="case" id="office">
-          <p class="label">Aug–Oct 2026 · 102 commits</p>
+        <article class="case reveal" id="office">
+          <p class="label" data-i18n="office.meta">Aug–Oct 2026 · 102 commits</p>
           <h3 class="title">Hasaycha AI Office</h3>
-          <p class="tagline">A 3D office where sixteen AI staff work, meet, and take phone calls.</p>
-          <p>Built on the open-source Hermes3D frontend (MIT). I added the staff, the integrations and the voice layer: each agent has its own persona, model and memory; the Manager delegates and runs planning meetings that end in consensus; and when a decision needs the owner, the office calls, in the browser, as a WhatsApp voice note, or in a Discord voice channel.</p>
-          <div class="readouts" role="list">
-            <div class="readout" role="listitem"><span class="k">SPEECH-TO-TEXT, 13 S CLIP</span><span class="v"><s>6.3 s</s><span class="arrow">→</span><em>1.6 s</em></span><span class="how">whisper.cpp on the desktop GPU (Vulkan) instead of the CPU</span></div>
-            <div class="readout" role="listitem"><span class="k">END OF SPEECH → MESSAGE SENT</span><span class="v"><s>~6.5 s</s><span class="arrow">→</span><em>3.2 s</em></span><span class="how">after: measured live; before: from the CPU timings</span></div>
-            <div class="readout" role="listitem"><span class="k">AGENT COLLISIONS PER AGENT</span><span class="v"><s>6–11 / 3 min</s><span class="arrow">→</span><em>~1 / 5 min</em></span><span class="how">A* start cells that connect; walkers pause, then pass</span></div>
+          <p class="tagline" data-i18n="office.tag">A 3D office where sixteen AI staff work, meet, and take phone calls.</p>
+          <p data-i18n="office.text">Built on the open-source Hermes3D frontend (MIT). I added the staff, the integrations and the voice layer: each agent has its own persona, model and memory; the Manager delegates and runs planning meetings that end in consensus; and when a decision needs the owner, <mark>the office calls</mark>: in the browser, as a WhatsApp voice note, or in a Discord voice channel.</p>
+          <div class="readouts">
+            <div class="readout"><span class="k" data-i18n="office.r1.k">SPEECH-TO-TEXT, 13 S CLIP</span><span class="v"><s>6.3 s</s><span class="arrow">→</span><em>1.6 s</em></span><span class="bar"><i style="--from:100%;--to:25%"></i></span><span class="how" data-i18n="office.r1.how">on the desktop GPU instead of the CPU</span></div>
+            <div class="readout"><span class="k" data-i18n="office.r2.k">END OF SPEECH → MESSAGE SENT</span><span class="v"><s>~6.5 s</s><span class="arrow">→</span><em>3.2 s</em></span><span class="bar"><i style="--from:100%;--to:49%"></i></span><span class="how" data-i18n="office.r2.how">after: measured live; before: from the CPU timings</span></div>
+            <div class="readout"><span class="k" data-i18n="office.r3.k">COLLISIONS PER AGENT, 3 MIN</span><span class="v"><s>6–11</s><span class="arrow">→</span><em>~0.6</em></span><span class="bar"><i style="--from:100%;--to:7%"></i></span><span class="how" data-i18n="office.r3.how">path planning that connects; walkers pause, then pass</span></div>
           </div>
           <div class="two">
             <div>
-              <h4>What I built</h4>
-              <ul>
-                <li>Phone calls with natural turn-taking: talk over the agent to interrupt, say “lanjut” to resume the cut sentence, pauses mid-thought join one message, and replies are spoken while still being written.</li>
+              <h4 data-i18n="h.built">What I built</h4>
+              <ul data-i18n="office.list">
+                <li>Phone calls with <mark>natural turn-taking</mark>: talk over the agent to interrupt, say “lanjut” to resume the cut sentence, pauses mid-thought join one message, and replies are spoken while still being written.</li>
                 <li>Planning meetings where agents argue and a facilitator decides; questions for the owner go out by WhatsApp voice note and a Discord call that reads the answer back.</li>
                 <li>An MCP server giving staff read access to the finance app, its admin, containers and CI.</li>
-                <li>A watchdog and morning briefing that spend no AI tokens on a healthy day.</li>
+                <li>A watchdog and a morning briefing that spend <mark>no AI tokens on a healthy day</mark>.</li>
               </ul>
             </div>
             <div>
-              <h4>Stack</h4>
-              <div class="chips"><span class="chip">Next.js</span><span class="chip">React Three Fiber</span><span class="chip">Phaser</span><span class="chip">Node.js</span><span class="chip">MCP</span><span class="chip">Python FastAPI</span><span class="chip">whisper.cpp</span><span class="chip">Vitest</span><span class="chip">Playwright</span><span class="chip">Docker</span></div>
-              <h4>How it fits together</h4>
-              <div class="flow" aria-label="Architecture">
-                <span class="node">Browser / phone</span><span class="to">→</span><span class="node">3D studio (Next.js)</span><span class="to">→</span><span class="node">Office adapter (Node)</span><span class="to">→</span><span class="node">Agent API</span>
-                <span class="node">Office adapter</span><span class="to">→</span><span class="node">MCP tools</span><span class="to">·</span><span class="node">WhatsApp / Discord</span><span class="to">·</span><span class="node">GPU voice service</span>
+              <h4 data-i18n="h.stack">Stack</h4>
+              <div class="chips"><span class="chip">Next.js</span><span class="chip">Three.js</span><span class="chip">Node.js</span><span class="chip">MCP</span><span class="chip">GPU speech-to-text</span><span class="chip">Vitest</span><span class="chip">Playwright</span><span class="chip">Docker</span></div>
+              <h4 data-i18n="h.fit">How it fits together</h4>
+              <div class="flow">
+                <span class="node" data-i18n="flow.browser">Browser / phone</span><span class="to">→</span><span class="node" data-i18n="flow.studio">3D office</span><span class="to">→</span><span class="node" data-i18n="flow.adapter">Office adapter</span><span class="to">→</span><span class="node" data-i18n="flow.agents">AI agents</span>
+                <span class="node" data-i18n="flow.adapter">Office adapter</span><span class="to">→</span><span class="node" data-i18n="flow.tools">Business tools (MCP)</span><span class="to">·</span><span class="node">WhatsApp / Discord</span><span class="to">·</span><span class="node" data-i18n="flow.voice">GPU voice service</span>
               </div>
             </div>
           </div>
         </article>
 
-        <article class="case" id="moodmoney">
-          <p class="label">May–Oct 2026 · 165 commits</p>
+        <article class="case reveal" id="moodmoney">
+          <p class="label" data-i18n="mm.meta">May–Oct 2026 · 165 commits</p>
           <h3 class="title">MoodMoney</h3>
-          <p class="tagline">A personal-finance app where your money is a plant: healthy finances bloom, overspending wilts it.</p>
+          <p class="tagline" data-i18n="mm.tag">A personal-finance app where your money is a plant: healthy finances bloom, overspending wilts it.</p>
+          <div class="readouts">
+            <div class="readout"><span class="k" data-i18n="mm.r1.k">END-TO-END TESTS</span><span class="v"><em>254</em> <span data-i18n="mm.r1.v">passing</span></span><span class="how" data-i18n="mm.r1.how">CI backs up the database before every migration</span></div>
+            <div class="readout"><span class="k" data-i18n="mm.r2.k">LANGUAGES</span><span class="v"><em>EN · ID</em></span><span class="how" data-i18n="mm.r2.how">installable web app, works offline</span></div>
+          </div>
           <div class="two">
             <div>
-              <h4>Highlights</h4>
-              <ul>
-                <li>Budgets, goals, bills, debts, shared household budgets, savings challenges and AI savings plans, in English and Indonesian.</li>
-                <li>Web push (VAPID) for bill reminders and budget alerts, with delivery tracking; Google sign-in; real-time updates over Socket.IO; installable PWA.</li>
-                <li>254 passing end-to-end tests; CI backs up the database before every migration.</li>
+              <h4 data-i18n="h.highlights">Highlights</h4>
+              <ul data-i18n="mm.list">
+                <li>Budgets, goals, bills, debts, <mark>shared household budgets</mark>, savings challenges and AI savings plans.</li>
+                <li>Push notifications for bill reminders and budget alerts, with delivery tracking; Google sign-in; real-time updates.</li>
               </ul>
+              <div class="links"><a class="btn primary" href="https://vps-rumah.tail1e8b54.ts.net/" data-i18n="mm.live">Open the live app</a></div>
             </div>
             <div>
-              <h4>Stack</h4>
-              <div class="chips"><span class="chip">NestJS 11</span><span class="chip">TypeORM</span><span class="chip">PostgreSQL</span><span class="chip">React 19</span><span class="chip">Vite PWA</span><span class="chip">Redux Toolkit</span><span class="chip">Tailwind 4</span><span class="chip">Socket.IO</span></div>
+              <h4 data-i18n="h.stack">Stack</h4>
+              <div class="chips"><span class="chip">NestJS 11</span><span class="chip">TypeORM</span><span class="chip">PostgreSQL</span><span class="chip">PWA</span><span class="chip">Socket.IO</span><span class="chip">Web Push</span><span class="chip">Playwright</span></div>
             </div>
           </div>
         </article>
 
-        <article class="case" id="backoffice">
-          <p class="label">Jun–Oct 2026 · 69 commits</p>
+        <article class="case reveal" id="backoffice">
+          <p class="label" data-i18n="bo.meta">Jun–Oct 2026 · 69 commits</p>
           <h3 class="title">MoodMoney Backoffice</h3>
-          <p class="tagline">The admin side: users, revenue, retention and AI cost in one place.</p>
-          <div class="two">
-            <div>
-              <h4>Highlights</h4>
-              <ul>
-                <li>Live dashboard counters, retention cohorts, funnels, MRR and churn.</li>
-                <li>User management with bulk actions, impersonation and create-on-behalf for support.</li>
-                <li>Per-user AI quotas with a daily usage dashboard; feature flags by segment.</li>
-              </ul>
-            </div>
-            <div>
-              <h4>Stack</h4>
-              <div class="chips"><span class="chip">NestJS</span><span class="chip">TypeORM</span><span class="chip">PostgreSQL</span><span class="chip">React 19</span><span class="chip">RTK Query</span><span class="chip">Playwright</span></div>
-            </div>
-          </div>
-        </article>
-
-        <article class="case" id="hermes">
-          <p class="label">May–Oct 2026 · three repositories</p>
-          <h3 class="title">Hermes personal assistant</h3>
-          <p class="tagline">A self-hosted family assistant on WhatsApp, Telegram and Discord, with long-term memory.</p>
-          <ul>
-            <li><b>Memory bridge</b> (Python): facts with semantic recall, PIN-protected secrets, reminders, per-group privacy.</li>
-            <li><b>Gateway fork</b> (32 commits): Discord voice calls with interruptions, WhatsApp pairing that recovers on its own, an owner/guest gate, per-request model overrides.</li>
-            <li><b>Control panel</b> (NestJS + React): start, stop and inspect every service from a phone.</li>
+          <p class="tagline" data-i18n="bo.tag">The admin side: users, revenue, retention and AI cost in one place.</p>
+          <ul data-i18n="bo.list">
+            <li>Live dashboard counters, retention cohorts, funnels, <mark>MRR and churn</mark>.</li>
+            <li>User management with bulk actions, impersonation and create-on-behalf for support.</li>
+            <li>Per-user AI quotas with a daily usage dashboard; feature flags by segment.</li>
           </ul>
         </article>
 
-        <article class="case" id="infra">
-          <p class="label">Ongoing</p>
-          <h3 class="title">Home lab &amp; operations</h3>
-          <p class="tagline">One desktop with a GPU, one VM, and the habits of a production team.</p>
-          <div class="readouts" role="list">
-            <div class="readout" role="listitem"><span class="k">DEPLOY</span><span class="v"><em>~10 min</em></span><span class="how">push → CI → image → private-network deploy, same in all six repos</span></div>
-            <div class="readout" role="listitem"><span class="k">RESTORE DRILL</span><span class="v"><em>monthly</em></span><span class="how">backups restored into scratch databases, row counts compared</span></div>
-            <div class="readout" role="listitem"><span class="k">VOICE SERVICE MEMORY</span><span class="v"><s>~1.5 GB</s><span class="arrow">→</span><em>105 MB</em></span><span class="how">the CPU model loads only as a GPU fallback</span></div>
+        <article class="case reveal" id="hermes">
+          <p class="label" data-i18n="he.meta">May–Oct 2026 · three repositories</p>
+          <h3 class="title" data-i18n="he.title">Hermes personal assistant</h3>
+          <p class="tagline" data-i18n="he.tag">A self-hosted family assistant on WhatsApp, Telegram and Discord, with long-term memory.</p>
+          <ul data-i18n="he.list">
+            <li><b>Memory bridge</b>: facts with semantic recall, <mark>PIN-protected secrets</mark>, reminders, per-group privacy.</li>
+            <li><b>Gateway fork</b> (32 commits): Discord voice calls with interruptions, WhatsApp pairing that recovers on its own, an owner/guest gate.</li>
+            <li><b>Control panel</b> (NestJS): start, stop and inspect every service from a phone.</li>
+          </ul>
+        </article>
+
+        <article class="case reveal" id="infra">
+          <p class="label" data-i18n="in.meta">Ongoing</p>
+          <h3 class="title" data-i18n="in.title">Home lab &amp; operations</h3>
+          <p class="tagline" data-i18n="in.tag">One desktop with a GPU, one VM, and the habits of a production team.</p>
+          <div class="readouts">
+            <div class="readout"><span class="k">DEPLOY</span><span class="v"><em>~10 min</em></span><span class="how" data-i18n="in.r1.how">push → CI → image → private-network deploy, same in all six repos</span></div>
+            <div class="readout"><span class="k" data-i18n="in.r2.k">RESTORE DRILL</span><span class="v"><em data-i18n="in.r2.v">monthly</em></span><span class="how" data-i18n="in.r2.how">backups restored into scratch databases, row counts compared</span></div>
+            <div class="readout"><span class="k" data-i18n="in.r3.k">VOICE SERVICE MEMORY</span><span class="v"><s>~1.5 GB</s><span class="arrow">→</span><em>105 MB</em></span><span class="bar"><i style="--from:100%;--to:7%"></i></span><span class="how" data-i18n="in.r3.how">the CPU model loads only as a fallback</span></div>
           </div>
-          <ul>
-            <li>GPU inference (local LLMs, speech-to-text, speech) on the desktop; every service in Docker Compose on a VM.</li>
+          <ul data-i18n="in.list">
+            <li>GPU inference (local LLMs, speech) on the desktop; every service in Docker Compose on a VM.</li>
             <li>GitHub Actions to a container registry, health checks, and a guard that skips a deploy once main has moved on.</li>
-            <li>Encrypted off-site backups, an external heartbeat, and a secret scan on every commit.</li>
+            <li><mark>Encrypted off-site backups</mark>, an external heartbeat, and a secret scan on every commit.</li>
           </ul>
         </article>
       </section>
 
       <section id="skills" aria-labelledby="skills-title">
-        <header>
-          <p class="label">Toolbox</p>
-          <h2 id="skills-title">Skills</h2>
+        <header class="reveal">
+          <p class="label" data-i18n="sk.label">Toolbox</p>
+          <h2 id="skills-title" data-i18n="sk.title">Skills</h2>
         </header>
-        <dl class="skills">
-          <div><dt>Languages</dt><dd>Java, TypeScript, JavaScript, Python, SQL</dd></div>
-          <div><dt>Backend</dt><dd>Spring Boot, Hibernate, JHipster, NestJS, Node.js, FastAPI, microservices, REST and WebSocket APIs</dd></div>
-          <div><dt>Frontend</dt><dd>React, Vite, Tailwind CSS, Redux Toolkit, Next.js, React Three Fiber</dd></div>
-          <div><dt>Data</dt><dd>MySQL (composite indexes, buffer pools), PostgreSQL, TypeORM, SQLite, vector search (Qdrant, embeddings)</dd></div>
-          <div><dt>AI</dt><dd>Claude Code and Claude CLI, local LLM inference (Ollama), MCP servers, speech-to-text and text-to-speech pipelines, agent orchestration</dd></div>
+        <dl class="skills reveal">
+          <div><dt data-i18n="sk.lang">Languages</dt><dd>Java, TypeScript, JavaScript, SQL</dd></div>
+          <div><dt data-i18n="sk.fw">Frameworks</dt><dd>Spring Boot, Hibernate, JHipster, NestJS, Node.js</dd></div>
+          <div><dt data-i18n="sk.arch">Architecture &amp; data</dt><dd data-i18n="sk.arch.v">Microservices, REST and WebSocket APIs, MySQL (composite indexes, buffer pools), PostgreSQL, vector search (Qdrant)</dd></div>
+          <div><dt data-i18n="sk.ai">AI &amp; dev tools</dt><dd data-i18n="sk.ai.v">Claude Code and Claude CLI, local LLMs (Ollama, DeepSeek, Llama), prompt engineering, MCP</dd></div>
           <div><dt>Cloud &amp; DevOps</dt><dd>Docker, GitHub Actions, AWS S3, GCP, Cloudflare, Tailscale, Sentry, New Relic, Datadog</dd></div>
-          <div><dt>Integrations</dt><dd>Midtrans, Xendit, DOKU, Zendesk, Braze, Ascentis, Redcat, IBM Datacap, WhatsApp, Telegram, Discord</dd></div>
+          <div><dt data-i18n="sk.int">Integrations</dt><dd>Midtrans, Xendit, DOKU, Zendesk, Braze, Ascentis, Redcat, IBM Datacap</dd></div>
         </dl>
       </section>
 
       <section id="practice" aria-labelledby="practice-title">
-        <header>
-          <p class="label">How I work</p>
-          <h2 id="practice-title">Measured, tested, written down</h2>
+        <header class="reveal">
+          <p class="label" data-i18n="pc.label">How I work</p>
+          <h2 id="practice-title" data-i18n="pc.title">Measured, tested, written down</h2>
         </header>
         <div class="practice">
-          <div><b>Measure first</b><p>A fix starts with a probe that reproduces the problem and ends with the same probe showing the change.</p></div>
-          <div><b>Tests that fail first</b><p>A bug gets a test that fails before the fix; CI runs typecheck, unit and end-to-end tests on every push.</p></div>
-          <div><b>Security by default</b><p>Least-privilege database roles, secret scans before every commit, and restore drills for backups.</p></div>
-          <div><b>AI where it pays</b><p>Plain checks run first; models are called only when judgement is needed.</p></div>
+          <div class="reveal"><b data-i18n="pc.1.t">Measure first</b><p data-i18n="pc.1.p">A fix starts with a probe that reproduces the problem and ends with the same probe showing the change.</p></div>
+          <div class="reveal"><b data-i18n="pc.2.t">Tests that fail first</b><p data-i18n="pc.2.p">A bug gets a test that fails before the fix; CI runs type checks, unit and end-to-end tests on every push.</p></div>
+          <div class="reveal"><b data-i18n="pc.3.t">Security by default</b><p data-i18n="pc.3.p">Least-privilege database roles, secret scans before every commit, and restore drills for backups.</p></div>
+          <div class="reveal"><b data-i18n="pc.4.t">AI where it pays</b><p data-i18n="pc.4.p">AI speeds up the writing; I own the design, the review and the result. Plain checks run first, models only where judgement is needed.</p></div>
         </div>
       </section>
 
       <section id="education" aria-labelledby="education-title">
-        <header>
-          <p class="label">Background</p>
-          <h2 id="education-title">Education &amp; certifications</h2>
+        <header class="reveal">
+          <p class="label" data-i18n="ed.label">Background</p>
+          <h2 id="education-title" data-i18n="ed.title">Education &amp; certifications</h2>
         </header>
-        <div class="log">
-          <div class="entry">
-            <p class="when">2008 – 2012</p>
-            <div class="what">
-              <h3>Bachelor of Information Systems</h3>
-              <p class="org">Indonesian Computer University (UNIKOM), Bandung</p>
-              <p class="note">Final project: design analysis with the branch-and-bound algorithm.</p>
-            </div>
+        <div class="edu">
+          <div class="reveal">
+            <p class="label">2008 – 2012</p>
+            <h3 data-i18n="ed.degree">Bachelor of Information Systems</h3>
+            <p class="note" data-i18n="ed.school">Indonesian Computer University (UNIKOM), Bandung. Final project: design analysis with the branch-and-bound algorithm.</p>
           </div>
-          <div class="entry">
-            <p class="when">2013 – 2015</p>
-            <div class="what">
-              <h3>Certifications &amp; training</h3>
-              <ul>
-                <li>IBM Datacap Taskmaster Capture Product Fundamentals (Iverson Technology, 2013)</li>
-                <li>DB Security Workshop (Oracle Indonesia, 2013)</li>
-                <li>Basic Way4 Training (OpenWay Indonesia, 2015)</li>
-              </ul>
-            </div>
+          <div class="reveal">
+            <p class="label">2013 – 2015</p>
+            <h3 data-i18n="ed.certs">Certifications &amp; training</h3>
+            <ul>
+              <li>IBM Datacap Taskmaster Capture Product Fundamentals (Iverson Technology, 2013)</li>
+              <li>DB Security Workshop (Oracle Indonesia, 2013)</li>
+              <li>Basic Way4 Training (OpenWay Indonesia, 2015)</li>
+            </ul>
           </div>
         </div>
       </section>
 
       <section id="contact" aria-labelledby="contact-title">
-        <div class="contact">
-          <p class="label">Contact</p>
-          <h2 id="contact-title">Let's talk</h2>
-          <p>Open to senior backend and AI engineering roles. Email is the quickest way to reach me.</p>
+        <div class="contact reveal">
+          <p class="label" data-i18n="ct.label">Contact</p>
+          <h2 id="contact-title" data-i18n="ct.title">Let's build something</h2>
+          <p data-i18n="ct.text">Open to senior backend and AI engineering roles. Email or LinkedIn is the quickest way to reach me.</p>
           <div class="copy">
             <code id="email">hamdanrijali@gmail.com</code>
-            <button type="button" id="copy-email">Copy email</button>
+          </div>
+          <div class="links">
+            <button type="button" class="btn primary" id="copy-email" data-i18n="ct.copy">Copy email</button>
+            <a class="btn" href="https://www.linkedin.com/in/hamdan-rijali-202b5599">LinkedIn</a>
+            <a class="btn" href="https://github.com/hasaycha">GitHub</a>
             <span class="note" id="copy-status" role="status"></span>
           </div>
-          <p class="note"><a href="https://github.com/hasaycha">github.com/hasaycha</a></p>
         </div>
         <footer>© 2026 Hamdan Rijali Triyadi</footer>
       </section>
@@ -408,23 +457,294 @@ footer { margin-top: 56px; font-size: 13px; color: var(--muted); }
 </div>
 
 <script>
-document.getElementById("copy-email").addEventListener("click", function () {
-  var status = document.getElementById("copy-status");
-  var text = document.getElementById("email").textContent;
-  var selectIt = function () {
-    var range = document.createRange();
-    range.selectNodeContents(document.getElementById("email"));
-    var selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
-    status.textContent = "Selected; press Ctrl+C to copy.";
+(function () {
+  /* ---------- Languages: English is in the page; others are listed here. ---------- */
+  var LANGS = {
+    id: {
+      "hero.where": "Bandung, Indonesia",
+      "hero.role": "Senior Backend Software Engineer",
+      "hero.lede": "Lebih dari <mark>sepuluh tahun</mark> membangun sistem backend untuk perbankan, asuransi, tiket kereta, dan pemesanan restoran, dengan Java, Spring Boot, Node.js, dan NestJS. Kini saya juga merilis <mark>produk AI sendiri</mark>, dibangun bersama Claude Code sebagai rekan pemrograman dan berjalan di server milik sendiri.",
+      "stat.years": "tahun di backend",
+      "stat.awards": "penghargaan di TabSquare",
+      "stat.banks": "bank sebagai konsultan",
+      "stat.commits": "commit di produk sendiri tahun 2026",
+      "cta.contact": "Hubungi saya",
+      "hero.floor": "Sketsa langsung kantor AI saya: agent berpindah antar meja",
+      "nav.experience": "Pengalaman", "nav.projects": "Project", "nav.skills": "Keahlian", "nav.practice": "Cara kerja", "nav.education": "Pendidikan", "nav.contact": "Kontak",
+      "exp.label": "Karier", "exp.title": "Pengalaman",
+      "exp.tab.when": "Jul 2021 – sekarang",
+      "exp.tab.org": "TabSquare · pemesanan restoran",
+      "exp.tab.list": "<li>Sistem pemesanan backend dan middleware untuk platform POS dan CRM, dengan Java dan Spring Boot.</li><li>Mengoordinasikan <mark>rilis keamanan di seluruh produksi</mark>: middleware 4.8 untuk menutup celah IDOR kritis, dengan rute lama tanpa autentikasi diblokir di Cloudflare.</li><li>Menyetel MySQL untuk layanan high-availability: menyelesaikan exception multi-thread dan mengatur ulang buffer pool.</li><li>Merancang dan meluncurkan <mark>modul Campaign Management dan Promotion</mark>, terintegrasi dengan Ascentis dan Braze.</li><li>Memakai Claude Code dan Claude CLI setiap hari untuk refactoring, boilerplate, dan debugging.</li>",
+      "exp.life.when": "Jul 2019 – Jul 2021",
+      "exp.life.org": "PT Lifepal Technologies Indonesia · asuransi",
+      "exp.life.list": "<li>Microservice quotation dan order dengan Node.js dan NestJS untuk pembelian asuransi online.</li><li>Integrasi payment gateway <mark>Midtrans, Xendit, dan DOKU</mark>, dengan request real-time dan webhook asinkron.</li><li>Layanan saldo agen, serta alur percakapan WhatsApp dengan Deno yang terhubung ke Zendesk.</li>",
+      "exp.ati.when": "Jan 2019 – Jul 2019",
+      "exp.ati.org": "ATI Business Group · tiket kereta",
+      "exp.ati.list": "<li>Backend platform pembelian tiket ACP Rail dengan Java, Spring Boot, dan Angular di atas JHipster.</li>",
+      "exp.inf.when": "Okt 2012 – Jan 2019",
+      "exp.inf.role": "IT Consultant &amp; Java Software Developer",
+      "exp.inf.org": "PT Infosys Solusi Terpadu · perbankan",
+      "exp.inf.list": "<li>BRI dan Bank Muamalat: layanan backend mobile banking dengan framework Java internal.</li><li>Bank Syariah Mandiri: <mark>IBM Datacap (ICR/OCR)</mark> untuk digitalisasi dokumen KYC saat onboarding nasabah.</li><li>Bank Sinarmas: sistem transaksi Java untuk operasional teller dan customer service.</li>",
+      "aw.1.date": "Des 2023 &amp; Feb 2024", "aw.1.name": "Extra Mile Award, dua kali",
+      "aw.1.text": "Kepemimpinan teknis dalam diskusi arsitektur, proof of concept integrasi Braze, dan mentoring.",
+      "aw.2.date": "Mar 2023", "aw.2.text": "Peluncuran end-to-end modul Campaign Management dan Promotion bersama Ascentis.",
+      "aw.3.date": "Mar 2022", "aw.3.text": "Rilis integrasi Redcat yang kritis dan optimasi performa Kiosk API.",
+      "aw.4.date": "Des 2021", "aw.4.text": "Onboarding cepat dan proyek inti optimasi Kiosk API.",
+      "pr.label": "Karya mandiri · 2026", "pr.title": "Project",
+      "pr.intro": "Dibangun bersama Claude Code sebagai rekan pemrograman AI. Produk, arsitektur, review, testing, dan operasionalnya saya pegang sendiri. Kodenya ada di repository private; dengan senang hati saya tunjukkan.",
+      "office.meta": "Agu–Okt 2026 · 102 commit",
+      "office.tag": "Kantor 3D tempat enam belas staf AI bekerja, rapat, dan menerima telepon.",
+      "office.text": "Dibangun di atas frontend open-source Hermes3D (MIT). Saya menambahkan staf, integrasi, dan lapisan suara: setiap agent punya persona, model, dan memori sendiri; Manager mendelegasikan tugas dan memimpin rapat perencanaan sampai sepakat; dan saat keputusan butuh pemilik, <mark>kantor menelepon</mark>: di browser, lewat voice note WhatsApp, atau di voice channel Discord.",
+      "office.r1.k": "SPEECH-TO-TEXT, KLIP 13 DTK", "office.r1.how": "di GPU desktop, bukan CPU",
+      "office.r2.k": "SELESAI BICARA → PESAN TERKIRIM", "office.r2.how": "sesudah: diukur langsung; sebelum: dari waktu proses CPU",
+      "office.r3.k": "TABRAKAN PER AGENT, 3 MENIT", "office.r3.how": "perencanaan jalur yang tersambung; agent berhenti sejenak lalu lewat",
+      "h.built": "Yang saya bangun", "h.stack": "Teknologi", "h.fit": "Cara kerjanya", "h.highlights": "Sorotan",
+      "office.list": "<li>Telepon dengan <mark>giliran bicara yang natural</mark>: potong agent saat bicara, bilang “lanjut” untuk meneruskan kalimat yang terpotong, jeda saat berpikir digabung jadi satu pesan, dan jawaban diucapkan sambil masih ditulis.</li><li>Rapat perencanaan: agent berdebat dan fasilitator memutuskan; pertanyaan untuk pemilik dikirim lewat voice note WhatsApp dan telepon Discord yang membacakan ulang jawabannya.</li><li>Server MCP yang memberi staf akses baca ke aplikasi keuangan, admin-nya, container, dan CI.</li><li>Watchdog dan briefing pagi yang <mark>tidak memakai token AI saat semua sehat</mark>.</li>",
+      "flow.browser": "Browser / HP", "flow.studio": "Kantor 3D", "flow.adapter": "Adapter kantor", "flow.agents": "Agent AI", "flow.tools": "Tool bisnis (MCP)", "flow.voice": "Layanan suara GPU",
+      "mm.meta": "Mei–Okt 2026 · 165 commit",
+      "mm.tag": "Aplikasi keuangan pribadi dengan metafora tanaman: keuangan sehat membuatnya mekar, boros membuatnya layu.",
+      "mm.r1.k": "TES END-TO-END", "mm.r1.v": "lulus", "mm.r1.how": "CI mem-backup database sebelum setiap migrasi",
+      "mm.r2.k": "BAHASA", "mm.r2.how": "web app yang bisa di-install dan jalan offline",
+      "mm.list": "<li>Anggaran, target, tagihan, utang, <mark>anggaran bersama keluarga</mark>, tantangan menabung, dan rencana tabungan AI.</li><li>Notifikasi push untuk pengingat tagihan dan peringatan anggaran, dengan pelacakan pengiriman; login Google; update real-time.</li>",
+      "mm.live": "Buka aplikasinya",
+      "bo.meta": "Jun–Okt 2026 · 69 commit",
+      "bo.tag": "Sisi admin: pengguna, pendapatan, retensi, dan biaya AI dalam satu tempat.",
+      "bo.list": "<li>Penghitung dashboard real-time, kohort retensi, funnel, <mark>MRR dan churn</mark>.</li><li>Manajemen pengguna dengan aksi massal, impersonasi, dan pembuatan data atas nama pengguna untuk support.</li><li>Kuota AI per pengguna dengan dashboard pemakaian harian; feature flag per segmen.</li>",
+      "he.meta": "Mei–Okt 2026 · tiga repository",
+      "he.title": "Asisten pribadi Hermes",
+      "he.tag": "Asisten keluarga self-hosted di WhatsApp, Telegram, dan Discord, dengan memori jangka panjang.",
+      "he.list": "<li><b>Memory bridge</b>: fakta dengan pencarian semantik, <mark>rahasia terlindungi PIN</mark>, pengingat, privasi per grup.</li><li><b>Fork gateway</b> (32 commit): telepon suara Discord yang bisa dipotong, pairing WhatsApp yang pulih sendiri, gerbang pemilik/tamu.</li><li><b>Panel kontrol</b> (NestJS): menyalakan, mematikan, dan memeriksa setiap layanan dari HP.</li>",
+      "in.meta": "Berjalan", "in.title": "Home lab &amp; operasional",
+      "in.tag": "Satu desktop dengan GPU, satu VM, dan kebiasaan tim produksi.",
+      "in.r1.how": "push → CI → image → deploy lewat jaringan privat, sama di keenam repo",
+      "in.r2.k": "UJI RESTORE", "in.r2.v": "bulanan", "in.r2.how": "backup dipulihkan ke database sementara, jumlah baris dibandingkan",
+      "in.r3.k": "MEMORI LAYANAN SUARA", "in.r3.how": "model CPU hanya dimuat sebagai cadangan",
+      "in.list": "<li>Inferensi GPU (LLM lokal, suara) di desktop; semua layanan dengan Docker Compose di VM.</li><li>GitHub Actions ke container registry, health check, dan pengaman yang melewati deploy jika main sudah bergerak.</li><li><mark>Backup off-site terenkripsi</mark>, heartbeat eksternal, dan secret scan di setiap commit.</li>",
+      "sk.label": "Perangkat", "sk.title": "Keahlian",
+      "sk.lang": "Bahasa pemrograman", "sk.fw": "Framework", "sk.arch": "Arsitektur &amp; data",
+      "sk.arch.v": "Microservices, REST dan WebSocket API, MySQL (composite index, buffer pool), PostgreSQL, pencarian vektor (Qdrant)",
+      "sk.ai": "AI &amp; dev tools", "sk.ai.v": "Claude Code dan Claude CLI, LLM lokal (Ollama, DeepSeek, Llama), prompt engineering, MCP",
+      "sk.int": "Integrasi",
+      "pc.label": "Cara kerja", "pc.title": "Terukur, teruji, terdokumentasi",
+      "pc.1.t": "Ukur dulu", "pc.1.p": "Perbaikan dimulai dengan probe yang mereproduksi masalah dan diakhiri dengan probe yang sama untuk membuktikan perubahannya.",
+      "pc.2.t": "Tes yang gagal dulu", "pc.2.p": "Setiap bug mendapat tes yang gagal sebelum diperbaiki; CI menjalankan type check, unit test, dan end-to-end test di setiap push.",
+      "pc.3.t": "Aman sejak awal", "pc.3.p": "Role database dengan hak minimum, secret scan sebelum setiap commit, dan uji restore untuk backup.",
+      "pc.4.t": "AI di tempat yang tepat", "pc.4.p": "AI mempercepat penulisan kode; desain, review, dan hasilnya tetap tanggung jawab saya. Cek biasa jalan duluan, model AI hanya saat butuh pertimbangan.",
+      "ed.label": "Latar belakang", "ed.title": "Pendidikan &amp; sertifikasi",
+      "ed.degree": "Sarjana Sistem Informasi",
+      "ed.school": "Universitas Komputer Indonesia (UNIKOM), Bandung. Tugas akhir: analisis desain dengan algoritma branch and bound.",
+      "ed.certs": "Sertifikasi &amp; pelatihan",
+      "ct.label": "Kontak", "ct.title": "Mari membangun sesuatu",
+      "ct.text": "Terbuka untuk posisi senior backend dan AI engineering. Email atau LinkedIn adalah cara tercepat menghubungi saya.",
+      "ct.copy": "Salin email"
+    }
   };
-  try {
-    navigator.clipboard.writeText(text).then(function () { status.textContent = "Copied."; }, selectIt);
-  } catch (err) {
-    selectIt();
+  var UI = {
+    en: { copied: "Copied.", select: "Selected; press Ctrl+C to copy." },
+    id: { copied: "Tersalin.", select: "Sudah dipilih; tekan Ctrl+C untuk menyalin." }
+  };
+  var nodes = Array.prototype.slice.call(document.querySelectorAll("[data-i18n]"));
+  var english = nodes.map(function (el) { return el.innerHTML; });
+  var current = "en";
+  var store = {
+    get: function () { try { return localStorage.getItem("lang"); } catch (e) { return null; } },
+    set: function (v) { try { localStorage.setItem("lang", v); } catch (e) {} }
+  };
+  function setLang(lang) {
+    current = LANGS[lang] || lang === "en" ? lang : "en";
+    var dict = LANGS[current] || {};
+    nodes.forEach(function (el, i) {
+      var key = el.getAttribute("data-i18n");
+      el.innerHTML = current === "en" ? english[i] : (dict[key] || english[i]);
+    });
+    document.documentElement.lang = current;
+    document.querySelectorAll(".lang button").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.getAttribute("data-lang") === current));
+    });
+    store.set(current);
   }
-});
+  document.querySelectorAll(".lang button").forEach(function (b) {
+    b.addEventListener("click", function () { setLang(b.getAttribute("data-lang")); });
+  });
+  var saved = store.get();
+  var preferred = saved || ((navigator.language || "").toLowerCase().indexOf("id") === 0 ? "id" : "en");
+  if (preferred !== "en") setLang(preferred);
+
+  /* ---------- Copy email ---------- */
+  document.getElementById("copy-email").addEventListener("click", function () {
+    var status = document.getElementById("copy-status");
+    var email = document.getElementById("email");
+    var selectIt = function () {
+      var range = document.createRange();
+      range.selectNodeContents(email);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      status.textContent = UI[current].select;
+    };
+    try {
+      navigator.clipboard.writeText(email.textContent).then(function () { status.textContent = UI[current].copied; }, selectIt);
+    } catch (e) { selectIt(); }
+  });
+
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- Count-up stats ---------- */
+  function countUp(el) {
+    var target = Number(el.getAttribute("data-count"));
+    var prefix = el.getAttribute("data-prefix") || "";
+    var suffix = el.getAttribute("data-suffix") || "";
+    if (reduce) return;
+    var start = null;
+    function step(t) {
+      if (start === null) start = t;
+      var p = Math.min(1, (t - start) / 1400);
+      var eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = prefix + Math.round(target * eased) + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  document.querySelectorAll("[data-count]").forEach(countUp);
+
+  /* ---------- Scroll reveal (below the fold only) ---------- */
+  if (!reduce && "IntersectionObserver" in window) {
+    var fold = window.innerHeight;
+    var items = document.querySelectorAll(".reveal");
+    var timeline = document.querySelector(".timeline");
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.remove("pre", "pre-line");
+        io.unobserve(entry.target);
+      });
+    }, { rootMargin: "0px 0px -12% 0px" });
+    items.forEach(function (el) {
+      if (el.getBoundingClientRect().top > fold) {
+        el.classList.add("pre");
+        io.observe(el);
+      }
+    });
+    if (timeline && timeline.getBoundingClientRect().top > fold) {
+      timeline.classList.add("pre-line");
+      io.observe(timeline);
+    }
+    // Two frames later the pre state is painted, so transitions run.
+    requestAnimationFrame(function () { requestAnimationFrame(function () {
+      items.forEach(function (el) { el.classList.add("reveal"); });
+    }); });
+    // Highlights in the hero draw on load.
+    document.querySelectorAll(".hero mark").forEach(function (m) {
+      m.classList.add("pre-mark");
+      requestAnimationFrame(function () { requestAnimationFrame(function () { m.classList.remove("pre-mark"); }); });
+    });
+  }
+
+  /* ---------- Active section in the index ---------- */
+  if ("IntersectionObserver" in window) {
+    var links = {};
+    document.querySelectorAll("nav.index a").forEach(function (a) { links[a.getAttribute("href").slice(1)] = a; });
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting || !links[e.target.id]) return;
+        Object.keys(links).forEach(function (k) { links[k].classList.toggle("on", k === e.target.id); });
+      });
+    }, { rootMargin: "-40% 0px -55% 0px" });
+    document.querySelectorAll("main > section").forEach(function (s) { spy.observe(s); });
+  }
+
+  /* ---------- Hero: agents walking between desks ---------- */
+  var canvas = document.getElementById("floor");
+  var ctx = canvas.getContext("2d");
+  var colors = {};
+  function readColors() {
+    var cs = getComputedStyle(document.documentElement);
+    ["--sheet", "--rule", "--chip", "--muted", "--cobalt", "--leaf", "--ink"].forEach(function (k) {
+      colors[k] = cs.getPropertyValue(k).trim();
+    });
+  }
+  readColors();
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", readColors);
+  new MutationObserver(readColors).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+  var W = 0, H = 0, desks = [], agents = [];
+  var palette = ["--cobalt", "--leaf", "--ink", "--cobalt", "--leaf", "--muted", "--cobalt", "--leaf"];
+  function layout() {
+    var r = canvas.getBoundingClientRect();
+    var dpr = Math.min(2, window.devicePixelRatio || 1);
+    W = r.width; H = r.height;
+    canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    desks = [];
+    var cols = 4, rows = 3;
+    for (var y = 0; y < rows; y++) {
+      for (var x = 0; x < cols; x++) {
+        desks.push({ x: W * (0.16 + x * 0.225), y: H * (0.2 + y * 0.27), w: W * 0.12, h: H * 0.08 });
+      }
+    }
+    if (!agents.length) {
+      for (var i = 0; i < 8; i++) {
+        var d = desks[(i * 5) % desks.length];
+        agents.push({ x: d.x, y: d.y + d.h, tx: d.x, ty: d.y + d.h, wait: Math.random() * 2, color: palette[i], talk: 0 });
+      }
+    }
+  }
+  function seatOf(d) { return { x: d.x + d.w / 2, y: d.y + d.h + 10 }; }
+  function frame(dt) {
+    ctx.clearRect(0, 0, W, H);
+    // Floor grid
+    ctx.strokeStyle = colors["--rule"]; ctx.lineWidth = 1; ctx.globalAlpha = 0.5;
+    for (var gx = 0; gx < W; gx += 24) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke(); }
+    for (var gy = 0; gy < H; gy += 24) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke(); }
+    ctx.globalAlpha = 1;
+    // Desks
+    desks.forEach(function (d) {
+      ctx.fillStyle = colors["--chip"]; ctx.strokeStyle = colors["--rule"];
+      ctx.beginPath(); ctx.roundRect ? ctx.roundRect(d.x, d.y, d.w, d.h, 4) : ctx.rect(d.x, d.y, d.w, d.h); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = colors["--muted"]; ctx.globalAlpha = 0.5;
+      ctx.fillRect(d.x + d.w * 0.35, d.y + d.h * 0.25, d.w * 0.3, d.h * 0.3);
+      ctx.globalAlpha = 1;
+    });
+    // Agents
+    agents.forEach(function (a) {
+      var dx = a.tx - a.x, dy = a.ty - a.y, dist = Math.hypot(dx, dy);
+      if (dist > 1) {
+        var speed = 46 * dt;
+        a.x += dx / dist * Math.min(speed, dist); a.y += dy / dist * Math.min(speed, dist);
+      } else {
+        a.wait -= dt;
+        if (a.wait <= 0) {
+          var s = seatOf(desks[Math.floor(Math.random() * desks.length)]);
+          a.tx = s.x + (Math.random() - 0.5) * 12; a.ty = s.y;
+          a.wait = 1.5 + Math.random() * 3;
+          if (Math.random() < 0.35) a.talk = 1.6;
+        }
+      }
+      a.talk = Math.max(0, a.talk - dt);
+      ctx.fillStyle = colors[a.color];
+      ctx.beginPath(); ctx.arc(a.x, a.y, 6, 0, Math.PI * 2); ctx.fill();
+      if (a.talk > 0) {
+        ctx.fillStyle = colors["--sheet"]; ctx.strokeStyle = colors[a.color];
+        ctx.beginPath(); ctx.roundRect ? ctx.roundRect(a.x + 6, a.y - 24, 26, 14, 6) : ctx.rect(a.x + 6, a.y - 24, 26, 14); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = colors[a.color];
+        for (var k = 0; k < 3; k++) { ctx.beginPath(); ctx.arc(a.x + 13 + k * 6, a.y - 17, 1.6, 0, Math.PI * 2); ctx.fill(); }
+      }
+    });
+  }
+  layout();
+  window.addEventListener("resize", layout);
+  if (reduce) {
+    frame(0);
+  } else {
+    var last = null;
+    (function loop(t) {
+      var dt = last === null ? 0 : Math.min(0.05, (t - last) / 1000);
+      last = t;
+      frame(dt);
+      requestAnimationFrame(loop);
+    })(performance.now());
+  }
+})();
 </script>
 </body>
 </html>
