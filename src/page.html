@@ -230,7 +230,6 @@ mark { transition: background-size 1.1s cubic-bezier(.2, .8, .2, 1) .35s; }
             <p class="org" data-i18n="exp.tab.org">TabSquare · restaurant ordering</p>
             <ul data-i18n="exp.tab.list">
               <li>Backend ordering systems and middleware for POS and CRM platforms, in Java and Spring Boot.</li>
-              <li>Coordinated a <mark>production-wide security rollout</mark>: middleware 4.8 to close critical IDOR vulnerabilities, with legacy unauthenticated routes blocked at Cloudflare.</li>
               <li>Tuned MySQL for high-availability services: resolved multi-threaded exceptions and resized buffer pools.</li>
               <li>Designed and launched the <mark>Campaign Management and Promotion module</mark>, integrated with Ascentis and Braze.</li>
               <li>Uses Claude Code and the Claude CLI daily for refactoring, boilerplate and debugging.</li>
@@ -352,8 +351,8 @@ mark { transition: background-size 1.1s cubic-bezier(.2, .8, .2, 1) .35s; }
           <h3 class="title" data-i18n="he.title">Hermes personal assistant</h3>
           <p class="tagline" data-i18n="he.tag">A self-hosted family assistant on WhatsApp, Telegram and Discord, with long-term memory.</p>
           <ul data-i18n="he.list">
-            <li><b>Memory bridge</b>: facts with semantic recall, <mark>PIN-protected secrets</mark>, reminders, per-group privacy.</li>
-            <li><b>Gateway fork</b> (32 commits): Discord voice calls with interruptions, WhatsApp pairing that recovers on its own, an owner/guest gate.</li>
+            <li><b>Memory bridge</b>: facts with semantic recall, reminders, <mark>WhatsApp group support</mark>.</li>
+            <li><b>Gateway fork</b> (32 commits): Discord voice calls with interruptions, WhatsApp pairing that recovers on its own, per-request model selection.</li>
             <li><b>Control panel</b> (NestJS): start, stop and inspect every service from a phone.</li>
           </ul>
         </article>
@@ -370,7 +369,7 @@ mark { transition: background-size 1.1s cubic-bezier(.2, .8, .2, 1) .35s; }
           <ul data-i18n="in.list">
             <li>GPU inference (local LLMs, speech) on the desktop; every service in Docker Compose on a VM.</li>
             <li>GitHub Actions to a container registry, health checks, and a guard that skips a deploy once main has moved on.</li>
-            <li><mark>Encrypted off-site backups</mark>, an external heartbeat, and a secret scan on every commit.</li>
+            <li><mark>Off-site backups</mark> with monthly restore drills, and an external uptime heartbeat.</li>
           </ul>
         </article>
       </section>
@@ -385,7 +384,7 @@ mark { transition: background-size 1.1s cubic-bezier(.2, .8, .2, 1) .35s; }
           <div><dt data-i18n="sk.fw">Frameworks</dt><dd>Spring Boot, Hibernate, JHipster, NestJS, Node.js</dd></div>
           <div><dt data-i18n="sk.arch">Architecture &amp; data</dt><dd data-i18n="sk.arch.v">Microservices, REST and WebSocket APIs, MySQL (composite indexes, buffer pools), PostgreSQL, vector search (Qdrant)</dd></div>
           <div><dt data-i18n="sk.ai">AI &amp; dev tools</dt><dd data-i18n="sk.ai.v">Claude Code and Claude CLI, local LLMs (Ollama, DeepSeek, Llama), prompt engineering, MCP</dd></div>
-          <div><dt>Cloud &amp; DevOps</dt><dd>Docker, GitHub Actions, AWS S3, GCP, Cloudflare, Tailscale, Sentry, New Relic, Datadog</dd></div>
+          <div><dt>Cloud &amp; DevOps</dt><dd>Docker, GitHub Actions, AWS S3, GCP, Tailscale, Sentry, New Relic, Datadog</dd></div>
           <div><dt data-i18n="sk.int">Integrations</dt><dd>Midtrans, Xendit, DOKU, Zendesk, Braze, Ascentis, Redcat, IBM Datacap</dd></div>
         </dl>
       </section>
@@ -398,7 +397,7 @@ mark { transition: background-size 1.1s cubic-bezier(.2, .8, .2, 1) .35s; }
         <div class="practice">
           <div class="reveal"><b data-i18n="pc.1.t">Measure first</b><p data-i18n="pc.1.p">A fix starts with a probe that reproduces the problem and ends with the same probe showing the change.</p></div>
           <div class="reveal"><b data-i18n="pc.2.t">Tests that fail first</b><p data-i18n="pc.2.p">A bug gets a test that fails before the fix; CI runs type checks, unit and end-to-end tests on every push.</p></div>
-          <div class="reveal"><b data-i18n="pc.3.t">Security by default</b><p data-i18n="pc.3.p">Least-privilege database roles, secret scans before every commit, and restore drills for backups.</p></div>
+          <div class="reveal"><b data-i18n="pc.3.t">Reliable by default</b><p data-i18n="pc.3.p">Health checks, monitoring, and backups that are restored every month to prove they work.</p></div>
           <div class="reveal"><b data-i18n="pc.4.t">AI where it pays</b><p data-i18n="pc.4.p">AI speeds up the writing; I own the design, the review and the result. Plain checks run first, models only where judgement is needed.</p></div>
         </div>
       </section>
@@ -465,7 +464,7 @@ mark { transition: background-size 1.1s cubic-bezier(.2, .8, .2, 1) .35s; }
       "exp.label": "Karier", "exp.title": "Pengalaman",
       "exp.tab.when": "Jul 2021 – sekarang",
       "exp.tab.org": "TabSquare · pemesanan restoran",
-      "exp.tab.list": "<li>Sistem pemesanan backend dan middleware untuk platform POS dan CRM, dengan Java dan Spring Boot.</li><li>Mengoordinasikan <mark>rilis keamanan di seluruh produksi</mark>: middleware 4.8 untuk menutup celah IDOR kritis, dengan rute lama tanpa autentikasi diblokir di Cloudflare.</li><li>Menyetel MySQL untuk layanan high-availability: menyelesaikan exception multi-thread dan mengatur ulang buffer pool.</li><li>Merancang dan meluncurkan <mark>modul Campaign Management dan Promotion</mark>, terintegrasi dengan Ascentis dan Braze.</li><li>Memakai Claude Code dan Claude CLI setiap hari untuk refactoring, boilerplate, dan debugging.</li>",
+      "exp.tab.list": "<li>Sistem pemesanan backend dan middleware untuk platform POS dan CRM, dengan Java dan Spring Boot.</li><li>Menyetel MySQL untuk layanan high-availability: menyelesaikan exception multi-thread dan mengatur ulang buffer pool.</li><li>Merancang dan meluncurkan <mark>modul Campaign Management dan Promotion</mark>, terintegrasi dengan Ascentis dan Braze.</li><li>Memakai Claude Code dan Claude CLI setiap hari untuk refactoring, boilerplate, dan debugging.</li>",
       "exp.life.when": "Jul 2019 – Jul 2021",
       "exp.life.org": "PT Lifepal Technologies Indonesia · asuransi",
       "exp.life.list": "<li>Microservice quotation dan order dengan Node.js dan NestJS untuk pembelian asuransi online.</li><li>Integrasi payment gateway <mark>Midtrans, Xendit, dan DOKU</mark>, dengan request real-time dan webhook asinkron.</li><li>Layanan saldo agen, serta alur percakapan WhatsApp dengan Deno yang terhubung ke Zendesk.</li>",
@@ -504,13 +503,13 @@ mark { transition: background-size 1.1s cubic-bezier(.2, .8, .2, 1) .35s; }
       "he.meta": "Mei–Okt 2026 · tiga repository",
       "he.title": "Asisten pribadi Hermes",
       "he.tag": "Asisten keluarga self-hosted di WhatsApp, Telegram, dan Discord, dengan memori jangka panjang.",
-      "he.list": "<li><b>Memory bridge</b>: fakta dengan pencarian semantik, <mark>rahasia terlindungi PIN</mark>, pengingat, privasi per grup.</li><li><b>Fork gateway</b> (32 commit): telepon suara Discord yang bisa dipotong, pairing WhatsApp yang pulih sendiri, gerbang pemilik/tamu.</li><li><b>Panel kontrol</b> (NestJS): menyalakan, mematikan, dan memeriksa setiap layanan dari HP.</li>",
+      "he.list": "<li><b>Memory bridge</b>: fakta dengan pencarian semantik, pengingat, <mark>dukungan grup WhatsApp</mark>.</li><li><b>Fork gateway</b> (32 commit): telepon suara Discord yang bisa dipotong, pairing WhatsApp yang pulih sendiri, pemilihan model per permintaan.</li><li><b>Panel kontrol</b> (NestJS): menyalakan, mematikan, dan memeriksa setiap layanan dari HP.</li>",
       "in.meta": "Berjalan", "in.title": "Home lab &amp; operasional",
       "in.tag": "Satu desktop dengan GPU, satu VM, dan kebiasaan tim produksi.",
       "in.r1.how": "push → CI → image → deploy lewat jaringan privat, sama di keenam repo",
       "in.r2.k": "UJI RESTORE", "in.r2.v": "bulanan", "in.r2.how": "backup dipulihkan ke database sementara, jumlah baris dibandingkan",
       "in.r3.k": "MEMORI LAYANAN SUARA", "in.r3.how": "model CPU hanya dimuat sebagai cadangan",
-      "in.list": "<li>Inferensi GPU (LLM lokal, suara) di desktop; semua layanan dengan Docker Compose di VM.</li><li>GitHub Actions ke container registry, health check, dan pengaman yang melewati deploy jika main sudah bergerak.</li><li><mark>Backup off-site terenkripsi</mark>, heartbeat eksternal, dan secret scan di setiap commit.</li>",
+      "in.list": "<li>Inferensi GPU (LLM lokal, suara) di desktop; semua layanan dengan Docker Compose di VM.</li><li>GitHub Actions ke container registry, health check, dan pengaman yang melewati deploy jika main sudah bergerak.</li><li><mark>Backup off-site</mark> dengan uji restore bulanan, dan heartbeat uptime eksternal.</li>",
       "sk.label": "Perangkat", "sk.title": "Keahlian",
       "sk.lang": "Bahasa pemrograman", "sk.fw": "Framework", "sk.arch": "Arsitektur &amp; data",
       "sk.arch.v": "Microservices, REST dan WebSocket API, MySQL (composite index, buffer pool), PostgreSQL, pencarian vektor (Qdrant)",
@@ -519,7 +518,7 @@ mark { transition: background-size 1.1s cubic-bezier(.2, .8, .2, 1) .35s; }
       "pc.label": "Cara kerja", "pc.title": "Terukur, teruji, terdokumentasi",
       "pc.1.t": "Ukur dulu", "pc.1.p": "Perbaikan dimulai dengan probe yang mereproduksi masalah dan diakhiri dengan probe yang sama untuk membuktikan perubahannya.",
       "pc.2.t": "Tes yang gagal dulu", "pc.2.p": "Setiap bug mendapat tes yang gagal sebelum diperbaiki; CI menjalankan type check, unit test, dan end-to-end test di setiap push.",
-      "pc.3.t": "Aman sejak awal", "pc.3.p": "Role database dengan hak minimum, secret scan sebelum setiap commit, dan uji restore untuk backup.",
+      "pc.3.t": "Andal sejak awal", "pc.3.p": "Health check, monitoring, dan backup yang dipulihkan setiap bulan untuk membuktikan bisa dipakai.",
       "pc.4.t": "AI di tempat yang tepat", "pc.4.p": "AI mempercepat penulisan kode; desain, review, dan hasilnya tetap tanggung jawab saya. Cek biasa jalan duluan, model AI hanya saat butuh pertimbangan.",
       "ed.label": "Latar belakang", "ed.title": "Pendidikan &amp; sertifikasi",
       "ed.degree": "Sarjana Sistem Informasi",
