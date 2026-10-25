@@ -212,6 +212,54 @@ dialog.palette::backdrop { background: rgba(10, 14, 20, .45); backdrop-filter: b
 .palette li[aria-selected="true"] { background: var(--chip); }
 .palette .hint { padding: 8px 18px 12px; font: 400 12px/1.4 var(--mono); color: var(--muted); }
 
+/* ---------- Motion layer (all of it switches off under prefers-reduced-motion) ---------- */
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 50; background: transparent; pointer-events: none; }
+.progress i { display: block; height: 100%; width: 100%; background: var(--cobalt); transform-origin: left; transform: scaleX(var(--read, 0)); }
+/* Hero intro: each word of the name rises out of a mask, then the role, the lede and the map. */
+.hero h1 .wd { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: .06em; }
+.hero h1 .wd > span { display: inline-block; transform: translateY(0); }
+.intro-run .hero h1 .wd > span { animation: rise .9s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--i) * 90ms + 80ms); }
+.intro-run .hero .role, .intro-run .hero .lede, .intro-run .hero .stats, .intro-run .hero .links, .intro-run .hero .label {
+  animation: fade-up .8s cubic-bezier(.2, .8, .2, 1) both; }
+.intro-run .hero .label { animation-delay: 0s; }
+.intro-run .hero .role { animation-delay: .35s; }
+.intro-run .hero .lede { animation-delay: .5s; }
+.intro-run .hero .stats { animation-delay: .65s; }
+.intro-run .hero .links { animation-delay: .8s; }
+@keyframes rise { from { transform: translateY(105%); } }
+@keyframes fade-up { from { opacity: 0; transform: translateY(16px); } }
+/* The map draws its wires, then the boxes pop in. */
+.intro-run .sysmap .wire { stroke-dasharray: var(--len) var(--len); animation: draw 1.2s ease both; animation-delay: calc(.4s + var(--k) * 70ms); }
+.intro-run .sysmap .node { animation: pop .5s cubic-bezier(.2, 1.4, .4, 1) both; animation-delay: calc(.3s + var(--k) * 80ms); transform-box: fill-box; transform-origin: center; }
+@keyframes draw { from { stroke-dashoffset: var(--len); } to { stroke-dashoffset: 0; } }
+@keyframes pop { from { opacity: 0; transform: scale(.7); } }
+/* The map leans towards the pointer. */
+.sysmap { transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .25s ease-out; will-change: transform; }
+/* A light that follows the pointer over cards. */
+.case, .award, .readout { position: relative; }
+.award::after, .readout::after, .case::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--cobalt) 14%, transparent), transparent 70%);
+  transition: opacity .3s; }
+.award:hover::after, .readout:hover::after, .case:hover::after { opacity: 1; }
+/* Buttons lean towards the pointer a little. */
+.btn.magnet { transition: transform .2s cubic-bezier(.2, .8, .2, 1), border-color .15s; }
+/* The stack, drifting past under the hero; it pauses under the pointer. */
+.marquee { overflow: hidden; border-block: 1px solid var(--rule); margin-top: 8px; mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+.marquee .track { display: flex; gap: 28px; width: max-content; padding-block: 14px; animation: drift 40s linear infinite; }
+.marquee:hover .track { animation-play-state: paused; }
+.marquee span { font: 500 14px/1 var(--mono); color: var(--muted); white-space: nowrap; }
+.marquee span::before { content: "◆"; color: var(--cobalt); margin-right: 10px; font-size: 9px; vertical-align: 2px; }
+@keyframes drift { to { transform: translateX(-50%); } }
+/* Section titles: words lift in when the section arrives. */
+section > header h2 .wd { display: inline-block; transition: transform .7s cubic-bezier(.2, .8, .2, 1), opacity .7s; transition-delay: calc(var(--i) * 70ms); }
+.pre section > header h2 .wd, section > header.pre h2 .wd { transform: translateY(40%); opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .intro-run * { animation: none !important; }
+  .sysmap { transform: none; transition: none; }
+  .marquee .track { animation: none; flex-wrap: wrap; width: auto; }
+  section > header h2 .wd { transition: none; }
+}
+
 @media (max-width: 560px) {
   #open-palette span, #open-palette kbd { display: none; }
   .brand { font-size: 14px; }
@@ -233,6 +281,7 @@ dialog.palette::backdrop { background: rgba(10, 14, 20, .45); backdrop-filter: b
 }
 </style>
 
+<div class="progress" aria-hidden="true"><i id="read"></i></div>
 <div class="wrap">
   <div class="topbar">
     <span class="brand">Hamdan R. T.</span>
@@ -271,6 +320,12 @@ dialog.palette::backdrop { background: rgba(10, 14, 20, .45); backdrop-filter: b
     </figure>
   </section>
 
+  <div class="marquee" aria-label="Tools I work with">
+    <div class="track">
+      <span>Java</span><span>Spring Boot</span><span>NestJS</span><span>Node.js</span><span>TypeScript</span><span>PostgreSQL</span><span>MySQL</span><span>Docker</span><span>GitHub Actions</span><span>Claude Code</span><span>MCP</span><span>Ollama</span><span>Three.js</span><span>Godot</span><span>Python</span><span>Tailscale</span>
+      <span aria-hidden="true">Java</span><span aria-hidden="true">Spring Boot</span><span aria-hidden="true">NestJS</span><span aria-hidden="true">Node.js</span><span aria-hidden="true">TypeScript</span><span aria-hidden="true">PostgreSQL</span><span aria-hidden="true">MySQL</span><span aria-hidden="true">Docker</span><span aria-hidden="true">GitHub Actions</span><span aria-hidden="true">Claude Code</span><span aria-hidden="true">MCP</span><span aria-hidden="true">Ollama</span><span aria-hidden="true">Three.js</span><span aria-hidden="true">Godot</span><span aria-hidden="true">Python</span><span aria-hidden="true">Tailscale</span>
+    </div>
+  </div>
   <div class="grid">
     <nav class="index" aria-label="Sections">
       <a href="#experience" data-i18n="nav.experience">Experience</a>
@@ -1004,5 +1059,78 @@ dialog.palette::backdrop { background: rgba(10, 14, 20, .45); backdrop-filter: b
     else if (e.key === "Enter") { e.preventDefault(); choose(sel); }
   });
   dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); });
+})();
+</script>
+
+<script>
+(function () {
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var fine = window.matchMedia("(pointer: fine)").matches;
+
+  /* ---------- Split the name and section titles into words (text stays readable without JS) ---------- */
+  function split(el) {
+    if (!el || el.dataset.split) return;
+    el.dataset.split = "1";
+    var words = el.textContent.trim().split(/\s+/);
+    el.innerHTML = words.map(function (w, i) {
+      return '<span class="wd" style="--i:' + i + '"><span>' + w.replace(/&/g, "&amp;").replace(/</g, "&lt;") + "</span></span>";
+    }).join(" ");
+  }
+  split(document.querySelector(".hero h1"));
+  document.querySelectorAll("section > header h2").forEach(function (h) {
+    // Titles change with the language switch, so they are split again whenever their text changes.
+    split(h);
+    new MutationObserver(function () { if (!h.querySelector(".wd")) { delete h.dataset.split; split(h); } })
+      .observe(h, { childList: true });
+  });
+
+  /* ---------- Intro ---------- */
+  var wires = document.querySelectorAll("#sysmap-svg .wire");
+  wires.forEach(function (w, k) { w.style.setProperty("--len", Math.ceil(w.getTotalLength())); w.style.setProperty("--k", k); });
+  document.querySelectorAll("#sysmap-svg .node").forEach(function (n, k) { n.style.setProperty("--k", k); });
+  if (!reduce) {
+    document.documentElement.classList.add("intro-run");
+    setTimeout(function () { document.documentElement.classList.remove("intro-run"); }, 2600);
+  }
+
+  /* ---------- Reading progress ---------- */
+  var bar = document.getElementById("read");
+  function progress() {
+    var h = document.documentElement.scrollHeight - innerHeight;
+    bar.style.setProperty("--read", h > 0 ? (scrollY / h).toFixed(4) : 0);
+  }
+  addEventListener("scroll", progress, { passive: true }); progress();
+
+  if (reduce || !fine) return;   // the rest follows a mouse pointer
+
+  /* ---------- The map leans towards the pointer ---------- */
+  var map = document.getElementById("sysmap");
+  map.addEventListener("pointermove", function (e) {
+    var r = map.getBoundingClientRect();
+    var x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+    map.style.setProperty("--ry", (x * 7).toFixed(2) + "deg");
+    map.style.setProperty("--rx", (-y * 7).toFixed(2) + "deg");
+  });
+  map.addEventListener("pointerleave", function () { map.style.setProperty("--ry", "0deg"); map.style.setProperty("--rx", "0deg"); });
+
+  /* ---------- Light under the pointer on cards ---------- */
+  document.querySelectorAll(".case, .award, .readout").forEach(function (card) {
+    card.addEventListener("pointermove", function (e) {
+      var r = card.getBoundingClientRect();
+      card.style.setProperty("--mx", (e.clientX - r.left) + "px");
+      card.style.setProperty("--my", (e.clientY - r.top) + "px");
+    });
+  });
+
+  /* ---------- Magnetic buttons ---------- */
+  document.querySelectorAll(".hero .links .btn, #copy-email").forEach(function (b) {
+    b.classList.add("magnet");
+    b.addEventListener("pointermove", function (e) {
+      var r = b.getBoundingClientRect();
+      var x = e.clientX - r.left - r.width / 2, y = e.clientY - r.top - r.height / 2;
+      b.style.transform = "translate(" + (x * 0.18).toFixed(1) + "px," + (y * 0.25).toFixed(1) + "px)";
+    });
+    b.addEventListener("pointerleave", function () { b.style.transform = ""; });
+  });
 })();
 </script>
