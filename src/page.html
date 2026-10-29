@@ -175,8 +175,13 @@ kbd { font: 500 11px/1 var(--mono); border: 1px solid var(--rule); border-bottom
 .sysmap .wire.hot { stroke: var(--cobalt); }
 .sysmap .pkt { fill: var(--leaf); }
 .sysmap .node { cursor: pointer; outline: none; }
-.sysmap .node rect { fill: var(--paper); stroke: var(--rule); stroke-width: 1.4; transition: stroke .2s, fill .2s; }
-.sysmap .node:hover rect, .sysmap .node:focus-visible rect, .sysmap .node.hot rect { stroke: var(--cobalt); fill: var(--sheet); }
+.sysmap .node-top { fill: var(--paper); stroke: var(--rule); stroke-width: 1.4; transition: transform .25s cubic-bezier(.2, .8, .2, 1), stroke .2s, fill .2s; }
+.sysmap .node-depth { fill: var(--rule); opacity: 0.65; transition: fill .2s; }
+.sysmap .node-shadow { fill: rgba(0,0,0,0.22); filter: blur(2px); transition: opacity .2s; }
+.sysmap .node:hover .node-top, .sysmap .node:focus-visible .node-top, .sysmap .node.hot .node-top { transform: translateY(-3px); stroke: var(--cobalt); fill: var(--sheet); }
+.sysmap .node:hover .node-depth, .sysmap .node.hot .node-depth { fill: var(--cobalt); opacity: 0.4; }
+.sysmap .node text, .sysmap .node circle { transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
+.sysmap .node:hover text, .sysmap .node.hot text, .sysmap .node:hover circle, .sysmap .node.hot circle { transform: translateY(-3px); }
 .sysmap .node text { font: 600 11.5px var(--body); fill: var(--ink); }
 .sysmap .node text.sub { font: 400 9.5px var(--mono); fill: var(--muted); }
 .sysmap .node .dot { fill: var(--leaf); }
@@ -950,8 +955,11 @@ section > header h2 .wd { display: inline-block; transition: transform .7s cubic
   });
   NODES.forEach(function (n) {
     var g = el("g", { "class": "node", tabindex: "0", role: "button", "aria-label": n.title + ": " + n.en });
-    el("rect", { x: n.x, y: n.y, width: n.w, height: H, rx: 8 }, g);
+    el("rect", { "class": "node-shadow", x: n.x + 2, y: n.y + 5, width: n.w, height: H, rx: 8 }, g);
+    el("rect", { "class": "node-depth", x: n.x, y: n.y + 3, width: n.w, height: H, rx: 8 }, g);
+    el("rect", { "class": "node-top", x: n.x, y: n.y, width: n.w, height: H, rx: 8 }, g);
     el("circle", { "class": "dot", cx: n.x + 12, cy: n.y + 16, r: 3.2 }, g);
+    el("circle", { "class": "dot2", cx: n.x + 12, cy: n.y + 24, r: 1.8, style: "fill: var(--cobalt); opacity: 0.8;" }, g);
     var t1 = el("text", { x: n.x + 21, y: n.y + 20 }, g); t1.textContent = n.title;
     var t2 = el("text", { "class": "sub", x: n.x + 12, y: n.y + 36 }, g); t2.textContent = n.sub;
     n.g = g;
