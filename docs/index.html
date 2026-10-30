@@ -506,24 +506,16 @@ section > header h2 .wd { display: inline-block; transition: transform .7s cubic
   </div>
 
   
-  <!-- Live Homelab Telemetry Strip -->
-  <div class="telemetry-bar" aria-label="Homelab Live Telemetry">
-    <div class="telem-item telem-status">
-      <span class="beacon"></span>
-      <span class="telem-label" data-i18n="telem.homelab">Homelab Cluster:</span>
-      <span class="telem-val">8 Services Nominal (vps-rumah)</span>
-    </div>
+  <!-- Clock and a real latency check from the visitor's browser -->
+  <div class="telemetry-bar" aria-label="Local time and latency">
     <div class="telem-item telem-clock">
       <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
       <span id="live-clock">Bandung (WIB) --:--:--</span>
     </div>
-    <div class="telem-item telem-ping" id="ping-trigger" role="button" tabindex="0" title="Click to test latency">
+    <div class="telem-item telem-ping" id="ping-trigger" role="button" tabindex="0" title="Measure the round trip from your browser to this site">
       <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-      <span id="ping-readout">Edge Latency: 14ms</span>
+      <span id="ping-readout" data-i18n="telem.ping">Your latency to this site: tap to measure</span>
       <span class="ping-tag">Ping</span>
-    </div>
-    <div class="telem-item telem-uptime">
-      <span class="telem-val" data-i18n="telem.uptime">99.98% Uptime · 0 Outages (2026)</span>
     </div>
   </div>
 
@@ -531,7 +523,7 @@ section > header h2 .wd { display: inline-block; transition: transform .7s cubic
     <div class="text">
       <div class="hero-top-row" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:4px;">
         <p class="label" data-i18n="hero.where" style="margin:0;">Bandung, Indonesia</p>
-        <span class="hero-badge-pill" id="name-toast"><span class="pulse-dot"></span>⚡ System Core Nominal · 10+ Years Backend</span>
+        <span class="hero-badge-pill" id="name-toast"><span class="pulse-dot"></span><span data-i18n="hero.badge">10+ years in backend</span></span>
       </div>
       <h1 id="who">Hamdan Rijali Triyadi</h1>
       <p class="role" data-i18n="hero.role">Senior Backend Software Engineer</p>
@@ -568,7 +560,7 @@ section > header h2 .wd { display: inline-block; transition: transform .7s cubic
       <div class="term-dots">
         <span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span>
       </div>
-      <span class="term-title">vps-rumah:~/hasaycha — Jarvis Terminal v2.4 (Live Interactive REPL)</span>
+      <span class="term-title">hasaycha:~ — about me, as a terminal</span>
       <div class="term-actions">
         <button type="button" class="term-btn" id="term-sound-toggle" aria-label="Toggle haptic audio">🔊 Sound: ON</button>
         <button type="button" class="term-btn" id="term-clear-btn" data-i18n="term.clear">Clear</button>
@@ -580,14 +572,13 @@ section > header h2 .wd { display: inline-block; transition: transform .7s cubic
       <button type="button" class="term-chip" data-cmd="stack">stack</button>
       <button type="button" class="term-chip" data-cmd="homelab">homelab</button>
       <button type="button" class="term-chip" data-cmd="awards">awards</button>
-      <button type="button" class="term-chip" data-cmd="coffee">coffee</button>
       <button type="button" class="term-chip" data-cmd="ai">ai-office</button>
       <button type="button" class="term-chip" data-cmd="matrix">matrix</button>
       <button type="button" class="term-chip" data-cmd="help">help</button>
     </div>
     <div class="term-body" id="term-output" role="log" aria-live="polite">
       <div class="term-line welcome" data-i18n="term.welcome">Welcome to Hamdan Rijali Triyadi's homelab terminal. Type a command or tap any quick chip above.</div>
-      <div class="term-line hint">Try typing: <code>status</code>, <code>stack</code>, <code>awards</code>, <code>homelab</code>, <code>coffee</code>, or <code>matrix</code></div>
+      <div class="term-line hint">Try typing: <code>status</code>, <code>stack</code>, <code>awards</code>, <code>homelab</code>, <code>ai</code>, or <code>matrix</code></div>
     </div>
     <form class="term-input-line" id="term-form">
       <span class="term-prompt">guest@vps-rumah:~$</span>
@@ -875,8 +866,8 @@ section > header h2 .wd { display: inline-block; transition: transform .7s cubic
   /* ---------- Languages: English is in the page; others are listed here. ---------- */
   var LANGS = {
     id: {
-            "telem.homelab": "Cluster Homelab:",
-      "telem.uptime": "99.98% Uptime · 0 Gangguan (2026)",
+      "telem.ping": "Latensi Anda ke situs ini: ketuk untuk mengukur",
+      "hero.badge": "10+ tahun di backend",
       "term.quick": "Jalankan cepat:",
       "term.clear": "Bersihkan",
       "term.welcome": "Selamat datang di terminal homelab Hamdan Rijali Triyadi. Ketik perintah atau pilih tombol cepat di atas.",
@@ -1220,12 +1211,15 @@ section > header h2 .wd { display: inline-block; transition: transform .7s cubic
   if (pingBtn && pingReadout) {
     pingBtn.addEventListener("click", function() {
       playBeep(900, "sine", 0.05, 0.06);
-      pingReadout.textContent = "Pinging...";
-      setTimeout(function() {
-        var ms = Math.floor(11 + Math.random() * 8);
-        pingReadout.textContent = "Edge Latency: " + ms + "ms";
-        playBeep(1200, "sine", 0.06, 0.06);
-      }, 240);
+      pingReadout.textContent = "Measuring...";
+      // A real round trip: a fresh, uncached request for this page, timed in the visitor's browser.
+      var t0 = performance.now();
+      fetch(location.pathname + "?ping=" + Date.now(), { method: "HEAD", cache: "no-store" })
+        .then(function() {
+          pingReadout.textContent = "Your latency to this site: " + Math.round(performance.now() - t0) + " ms";
+          playBeep(1200, "sine", 0.06, 0.06);
+        })
+        .catch(function() { pingReadout.textContent = "Latency check failed (offline?)"; });
     });
   }
 
@@ -1286,60 +1280,54 @@ section > header h2 .wd { display: inline-block; transition: transform .7s cubic
   var COMMANDS = {
     status: function() {
       return [
-        { type: "output-title", text: "[VPS-RUMAH SERVICES · TAILNET 100.95.8.20]" },
-        { type: "output-body", text: "● moodmoney_api     :3000   UP (healthy)    NestJS + Fastify + Prisma" },
-        { type: "output-body", text: "● mmbo_api          :4001   UP (healthy)    Backoffice Analytics" },
-        { type: "output-body", text: "● hermes-gateway    :3001   UP (nominal)    Multi-channel AI Agent & Bridge" },
-        { type: "output-body", text: "● hermes-nmb        :18080  UP (healthy)    Semantic Long-Term Recall" },
-        { type: "output-body", text: "● hasaycha-office   :3010   UP (healthy)    3D AI Office (20 Autonomous Staff)" },
-        { type: "output-body", text: "● postgresql        :5432   UP (healthy)    Automated Nightly Backups" },
-        { type: "output-body", text: "● render-worker-z13 GPU:OK  UP (active)     RTX 3050Ti + Studio Video Pipeline" },
-        { type: "output-success", text: "✔ All 8 clusters nominal. 0 production outages in 2026." }
+        { type: "output-title", text: "[WHAT RUNS ON MY HOMELAB]" },
+        { type: "output-body", text: "• MoodMoney API and web          NestJS, PostgreSQL" },
+        { type: "output-body", text: "• MoodMoney backoffice           analytics for the app" },
+        { type: "output-body", text: "• Hermes                         my assistant on WhatsApp and by voice" },
+        { type: "output-body", text: "• Natural Memory Bridge          long-term memory for Hermes" },
+        { type: "output-body", text: "• AI Office                      a 3D office of 20 AI staff" },
+        { type: "output-body", text: "• Video studio                   nightly Shorts on the laptop" },
+        { type: "output-success", text: "Live health stays private; ask me for a demo." }
       ];
     },
     stack: function() {
       return [
-        { type: "output-title", text: "[BACKEND ARCHITECTURE & CORE TECH]" },
-        { type: "output-body", text: "• Languages: Java 17/21 (Primary), TypeScript / Node.js, Python 3.11, SQL" },
-        { type: "output-body", text: "• Frameworks: Spring Boot 3, NestJS, Spring Cloud, Fastify, Hibernate" },
-        { type: "output-body", text: "• Storage: PostgreSQL (Partitioned, camelCase), Redis 7 (Cache/PubSub)" },
-        { type: "output-body", text: "• DevOps: Docker Compose, GitHub Actions CI/CD, Tailscale Mesh, Caddy" },
-        { type: "output-accent", text: "• Scale: Handled 200,000+ daily orders in F&B POS; sub-50ms bank API SLAs." }
+        { type: "output-title", text: "[STACK]" },
+        { type: "output-body", text: "• Languages: Java, TypeScript, JavaScript, SQL" },
+        { type: "output-body", text: "• Frameworks: Spring Boot, NestJS, Hibernate, Node.js, JHipster" },
+        { type: "output-body", text: "• Data: MySQL (composite indexes, buffer pools), PostgreSQL, Qdrant" },
+        { type: "output-body", text: "• Cloud & DevOps: AWS S3, GCP, Docker, GitHub Actions, Cloudflare, Sentry, New Relic, Datadog" },
+        { type: "output-accent", text: "• Integrations: Midtrans, Xendit, DOKU, Zendesk, Braze, Redcat, Ascentis, IBM Datacap" }
       ];
     },
     awards: function() {
       return [
-        { type: "output-title", text: "[TABSQUARE HONORS & ENGINEERING RECOGNITION]" },
+        { type: "output-title", text: "[AWARDS AT TABSQUARE]" },
         { type: "output-accent", text: "★ 2x Extra Mile Award (Dec 2023 & Feb 2024)" },
-        { type: "output-body", text: "  Technical leadership on architecture, Braze POC, and team mentoring." },
-        { type: "output-accent", text: "★ Star Performer Award (Mar 2023)" },
-        { type: "output-body", text: "  End-to-end launch of Campaign & Promotion module with Ascentis." },
-        { type: "output-accent", text: "★ Core Optimization Honors (Mar 2022 & Dec 2021)" },
-        { type: "output-body", text: "  Critical Redcat integration & high-throughput Kiosk API optimization." }
+        { type: "output-body", text: "  Architecture discussions, the Braze integration POC, and mentoring peers." },
+        { type: "output-accent", text: "★ Team Excellence Award (Mar 2023)" },
+        { type: "output-body", text: "  Launch of the Campaign Management and Promotion modules with Ascentis." },
+        { type: "output-accent", text: "★ Extra Mile Award (Mar 2022)" },
+        { type: "output-body", text: "  Redcat integration releases and Kiosk API performance." },
+        { type: "output-accent", text: "★ Stunning Debut Award (Dec 2021)" },
+        { type: "output-body", text: "  Fast onboarding and early technical impact." }
       ];
     },
     homelab: function() {
       return [
-        { type: "output-title", text: "[HARDWARE TOPOLOGY & INFRASTRUCTURE]" },
-        { type: "output-body", text: "• Node 1 (vps-rumah): 8 vCPU, 32GB RAM, Ubuntu 24.04 LTS (Primary Host)" },
-        { type: "output-body", text: "• Node 2 (z13 laptop): AMD Ryzen 9 + RTX 3050Ti (Worker & Video Studio)" },
-        { type: "output-body", text: "• Node 3 (desktop-ubuntu): GPU Ollama + Voice AI Server (:7789)" },
-        { type: "output-success", text: "• Connectivity: Encrypted Tailscale Mesh, WireGuard, private subnet routing" }
-      ];
-    },
-    coffee: function() {
-      return [
-        { type: "output-title", text: "[DEVELOPER FUEL PROTOCOL]" },
-        { type: "output-accent", text: "☕ Preferred Brews: Fore Butterscotch & Tuku Es Kopi Susu Tetangga" },
-        { type: "output-body", text: "Powers 10+ years of scalable Java microservices and late-night AI builds!" }
+        { type: "output-title", text: "[HARDWARE]" },
+        { type: "output-body", text: "• vps-rumah: a 4 vCPU, 6 GB Ubuntu VM running every service in Docker Compose" },
+        { type: "output-body", text: "• Laptop: AMD Ryzen AI Max+ 395 with Radeon 8060S, for the video studio and Jarvis" },
+        { type: "output-body", text: "• Desktop: an Ubuntu GPU box for local models (Ollama) and voice" },
+        { type: "output-success", text: "• Network: a private Tailscale mesh between them" }
       ];
     },
     ai: function() {
       return [
-        { type: "output-title", text: "[HASAYCHA AI OFFICE & JARVIS PROTOCOL]" },
-        { type: "output-body", text: "• Architecture: 20 autonomous AI staff coordinated via Model Context Protocol (MCP :18790)" },
-        { type: "output-body", text: "• Chief of Staff: Jarvis (Claude Opus & Antigravity Gemini Flash via 9router)" },
-        { type: "output-body", text: "• Media Production: Nightly autonomous video studio (2.39:1 Cinemascope & Shorts)" },
+        { type: "output-title", text: "[AI OFFICE, HERMES AND JARVIS]" },
+        { type: "output-body", text: "• AI Office: 20 AI staff in a 3D office, coordinated through MCP" },
+        { type: "output-body", text: "• Hermes: my assistant on WhatsApp; Jarvis is its voice and eyes on the laptop" },
+        { type: "output-body", text: "• Video studio: nightly Shorts and 2.39:1 cinemascope clips" },
         { type: "output-success", text: "• Principle: High autonomy with strict human verification for final publishing." }
       ];
     },
@@ -1367,12 +1355,11 @@ section > header h2 .wd { display: inline-block; transition: transform .7s cubic
     help: function() {
       return [
         { type: "output-title", text: "[AVAILABLE COMMANDS]" },
-        { type: "output-body", text: "status     - Check live status of homelab microservices" },
-        { type: "output-body", text: "stack      - Inspect senior backend technical stack" },
-        { type: "output-body", text: "awards     - Review TabSquare awards & career achievements" },
-        { type: "output-body", text: "homelab    - View multi-node server cluster specifications" },
-        { type: "output-body", text: "coffee     - Reveal engineer's favorite coffee fuel" },
-        { type: "output-body", text: "ai         - Explore 20 autonomous AI staff & Jarvis bridge" },
+        { type: "output-body", text: "status     - What runs on my homelab" },
+        { type: "output-body", text: "stack      - Languages, frameworks and tools I use" },
+        { type: "output-body", text: "awards     - Awards at TabSquare" },
+        { type: "output-body", text: "homelab    - The machines behind it" },
+        { type: "output-body", text: "ai         - The AI office, Hermes and Jarvis" },
         { type: "output-body", text: "matrix     - Run retro cybernetic digital rain" },
         { type: "output-body", text: "clear      - Clear the terminal buffer" }
       ];
