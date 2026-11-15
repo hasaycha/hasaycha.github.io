@@ -15,6 +15,7 @@ shell = f"""<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="google-site-verification" content="Iprp8cfRop5QBLzsI9KqkRpVq4khfpnLOLR1IpwyCcI" />
 <meta name="description" content="Hamdan Rijali Triyadi, Senior Backend Software Engineer in Bandung: Java, Spring Boot, NestJS, and self-hosted AI products.">
 <meta property="og:title" content="Hamdan Rijali Triyadi">
 <meta property="og:description" content="Senior Backend Software Engineer: experience, projects and contact.">
